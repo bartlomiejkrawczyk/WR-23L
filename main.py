@@ -13,9 +13,9 @@ RIGHT = 1
 
 FORWARD_SPEED = 30
 
-ERROR_WEIGHT = 11.3
-INTEGRAL_WEIGHT = 0.05
-DERIVATIVE_WEIGHT = 3.2
+ERROR_MULTIPLIER = 11.3
+INTEGRAL_MULTIPLIER = 0.05
+DERIVATIVE_MULTIPLIER = 3.2
 
 HISTORY_LOSS_SPEED = 0.9
 
@@ -83,9 +83,9 @@ class LineFollower:
         self._last_error = self._error
 
         turn_speed = int(
-            ERROR_WEIGHT * self._error +
-            INTEGRAL_WEIGHT * self._integral +
-            DERIVATIVE_WEIGHT * self._derivative
+            ERROR_MULTIPLIER * self._error +
+            INTEGRAL_MULTIPLIER * self._integral +
+            DERIVATIVE_MULTIPLIER * self._derivative
         )
 
         self._turn_speed = [
