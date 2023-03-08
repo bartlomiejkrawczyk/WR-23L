@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from ev3dev2.motor import MoveTank, OUTPUT_A, OUTPUT_B, LineFollowErrorTooFast, SpeedPercent
-from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3
+from ev3dev2.sensor import INPUT_1, INPUT_3
 from ev3dev2.sensor.lego import TouchSensor, ColorSensor
 
 
