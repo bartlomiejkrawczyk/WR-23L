@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_B
-from ev3dev2.sensor import INPUT_1, INPUT_2
+from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3
 from ev3dev2.sensor.lego import TouchSensor, ColorSensor
 from ev3dev2.sound import Sound
 
@@ -100,7 +100,7 @@ class LineFollower:
             wheel.on(rounded)
 
 
-def register_button(robot: LineFollower, pin: str = INPUT_1) -> Thread:
+def register_button(robot: LineFollower, pin: str = INPUT_3) -> Thread:
     button = TouchSensor(pin)
     thread = Thread(target=initialize_button, args=(robot, button))
     thread.start()
