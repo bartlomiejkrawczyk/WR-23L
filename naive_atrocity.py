@@ -55,11 +55,24 @@ def speak(message: str) -> None:
 
 
 def work() -> None:
+    forward_count = 0
+    left_turn_count = 0
+    right_turn_count = 0
+
+    is_turning_left = False
+    is_turning_right = False
+
     while True:
         if button.is_pressed:
             handle_button_pressed()
         else:
-            iterate()
+            iterate(
+                forward_count,
+                left_turn_count,
+                right_turn_count,
+                is_turning_left,
+                is_turning_right
+            )
 
 
 def handle_button_pressed() -> None:
@@ -70,15 +83,12 @@ def handle_button_pressed() -> None:
     speak('START')
 
 
-forward_count = 0
-left_turn_count = 0
-right_turn_count = 0
+def iterate(forward_count: int,
+            left_turn_count: int,
+            right_turn_count: int,
+            is_turning_left: bool,
+            is_turning_right: bool) -> None:
 
-is_turning_left = False
-is_turning_right = False
-
-
-def iterate() -> None:
     if isForward() and not is_turning_left and not is_turning_right:
         move_tank.on(SpeedPercent(FORWARD_SPEED), SpeedPercent(FORWARD_SPEED))
         if forward_count <= MAX_TURN_COUNT:
