@@ -4,6 +4,8 @@ from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3
 from ev3dev2.sensor.lego import TouchSensor, ColorSensor
 from ev3dev2.sound import Sound
 
+from typing import Tuple
+
 ##################
 #                #
 #    SETTINGS    #
@@ -66,7 +68,7 @@ def work() -> None:
         if button.is_pressed:
             handle_button_pressed()
         else:
-            iterate(
+            forward_count, left_turn_count, right_turn_count, is_turning_left, is_turning_right = iterate(
                 forward_count,
                 left_turn_count,
                 right_turn_count,
@@ -87,7 +89,7 @@ def iterate(forward_count: int,
             left_turn_count: int,
             right_turn_count: int,
             is_turning_left: bool,
-            is_turning_right: bool) -> None:
+            is_turning_right: bool) -> Tuple[int, int, int, bool, bool]:
 
     if isForward() and not is_turning_left and not is_turning_right:
         move_tank.on(SpeedPercent(FORWARD_SPEED), SpeedPercent(FORWARD_SPEED))
@@ -131,6 +133,8 @@ def iterate(forward_count: int,
 
     elif left_sensor.color == ColorSensor.COLOR_NOCOLOR or right_sensor.color == ColorSensor.COLOR_NOCOLOR:
         move_tank.off()
+
+    return forward_count, left_turn_count, right_turn_count, is_turning_left, is_turning_right
 
 
 def isForward() -> bool:
