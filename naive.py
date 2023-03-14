@@ -15,7 +15,7 @@ from time import sleep
 FORWARD_SPEED = 30
 TURN_SPEED = 40
 
-SLEEP = 1
+SLEEP_SECONDS = 1
 
 ###################
 #                 #
@@ -96,7 +96,7 @@ def iterate() -> None:
     elif left_sensor.color == ColorSensor.COLOR_NOCOLOR or right_sensor.color == ColorSensor.COLOR_NOCOLOR:
         move_tank.off()
 
-    sleep(SLEEP)
+    sleep(SLEEP_SECONDS)
 
 
 def stop() -> None:
