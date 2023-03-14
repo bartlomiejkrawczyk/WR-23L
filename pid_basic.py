@@ -20,6 +20,8 @@ CONSTANT_D = 0.003
 
 HISTORY_LOSS = 0.5
 
+AMPLIFIER = 0.05
+
 ###################
 #                 #
 #    CONSTANTS    #
@@ -66,16 +68,13 @@ def speak(message: str) -> None:
 
 def work() -> None:
     integral = 0.0
-    last_error = 0.0
-    derivative = 0.0
+    last_error = 0
 
     while True:
         if button.is_pressed:
             handle_button_pressed()
         else:
-            integral, last_error, derivative = iterate(
-                integral, last_error, derivative
-            )
+            integral, last_error = iterate(integral, last_error)
 
 
 def handle_button_pressed() -> None:
@@ -86,7 +85,7 @@ def handle_button_pressed() -> None:
     speak('START')
 
 
-def iterate(integral: float, last_error: float, derivative: float) -> Tuple[float, float, float]:
+def iterate(integral: float, last_error: int) -> Tuple[float, int]:
     error = left_sensor.reflected_light_intensity - \
         right_sensor.reflected_light_intensity
 
@@ -96,11 +95,11 @@ def iterate(integral: float, last_error: float, derivative: float) -> Tuple[floa
 
     turn_speed = CONSTANT_P * error + CONSTANT_I * integral + CONSTANT_D * derivative
 
-    left_motor.on(FORWARD_SPEED + turn_speed)
+    left_motor.on(FORWARD_SPEED + AMPLIFIER * turn_speed)
 
-    left_motor.on(FORWARD_SPEED - turn_speed)
+    left_motor.on(FORWARD_SPEED - AMPLIFIER * turn_speed)
 
-    return integral, last_error, derivative
+    return integral, last_error
 
 
 def stop() -> None:
