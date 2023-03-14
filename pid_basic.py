@@ -73,7 +73,9 @@ def work() -> None:
         if button.is_pressed:
             handle_button_pressed()
         else:
-            iterate(integral, last_error, derivative)
+            integral, last_error, derivative = iterate(
+                integral, last_error, derivative
+            )
 
 
 def handle_button_pressed() -> None:
