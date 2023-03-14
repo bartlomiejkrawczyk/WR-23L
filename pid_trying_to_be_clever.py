@@ -116,7 +116,7 @@ def iterate(integral: Tuple[float, float], last_error: int, expected: Tuple[int,
     )
 
     left_motor.on(forward_speed + AMPLIFIER * turn_speed)
-    left_motor.on(forward_speed - AMPLIFIER * turn_speed)
+    right_motor.on(forward_speed - AMPLIFIER * turn_speed)
 
     return integral, last_error
 
