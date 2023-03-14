@@ -89,40 +89,39 @@ def iterate(last_error: List[int], integral: List[float]) -> Tuple[List[int], Li
     else:
         base_speed = 25
 
-    if not (color[LEFT] != ColorSensor.COLOR_BLACK and color[LEFT] != ColorSensor.COLOR_WHITE) or (color[RIGHT] != ColorSensor.COLOR_BLACK and color[RIGHT] != ColorSensor.COLOR_WHITE):
-        integral = [
-            HISTORY_LOSS * integral[LEFT] + error[LEFT],
-            HISTORY_LOSS * integral[RIGHT] + error[RIGHT]
-        ]
-        derivative = [
-            error[LEFT] - last_error[LEFT],
-            error[RIGHT] - last_error[RIGHT]
-        ]
-        adjustment = [
-            CONSTANT_P * error[LEFT]
-            + CONSTANT_I * integral[LEFT]
-            + CONSTANT_D * derivative[LEFT],
-            CONSTANT_P * error[RIGHT]
-            + CONSTANT_I * integral[RIGHT]
-            + CONSTANT_D * derivative[RIGHT]
-        ]
+    integral = [
+        HISTORY_LOSS * integral[LEFT] + error[LEFT],
+        HISTORY_LOSS * integral[RIGHT] + error[RIGHT]
+    ]
+    derivative = [
+        error[LEFT] - last_error[LEFT],
+        error[RIGHT] - last_error[RIGHT]
+    ]
+    adjustment = [
+        CONSTANT_P * error[LEFT]
+        + CONSTANT_I * integral[LEFT]
+        + CONSTANT_D * derivative[LEFT],
+        CONSTANT_P * error[RIGHT]
+        + CONSTANT_I * integral[RIGHT]
+        + CONSTANT_D * derivative[RIGHT]
+    ]
 
-        left_motor.run_forever(
-            speed_sp=round(
-                base_speed
-                - AMPLIFIER * adjustment[RIGHT]
-                + AMPLIFIER * adjustment[LEFT]
-            ),
-            stop_action='coast'
-        )
-        right_motor.run_forever(
-            speed_sp=round(
-                base_speed
-                - AMPLIFIER * adjustment[LEFT]
-                + AMPLIFIER * adjustment[RIGHT]
-            ),
-            stop_action='coast'
-        )
+    left_motor.run_forever(
+        speed_sp=round(
+            base_speed
+            - AMPLIFIER * adjustment[RIGHT]
+            + AMPLIFIER * adjustment[LEFT]
+        ),
+        stop_action='coast'
+    )
+    right_motor.run_forever(
+        speed_sp=round(
+            base_speed
+            - AMPLIFIER * adjustment[LEFT]
+            + AMPLIFIER * adjustment[RIGHT]
+        ),
+        stop_action='coast'
+    )
 
     last_error = error
 
