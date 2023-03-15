@@ -12,11 +12,11 @@ from typing import Tuple
 #                #
 ##################
 
-FORWARD_SPEED = 20
-TURN_FORWARD_SPEED = 20
+FORWARD_SPEED = 40 # 40
+# TURN_FORWARD_SPEED = 45
 
 CONSTANT_P = 8.0
-CONSTANT_I = 0.45 # 0.9
+CONSTANT_I = 0.9 # 0.9
 CONSTANT_D = 0.003
 
 HISTORY_LOSS = 0.5
@@ -52,6 +52,10 @@ left_sensor = ColorSensor(INPUT_1)
 right_sensor = ColorSensor(INPUT_2)
 
 sensors = [left_sensor, right_sensor]
+
+print(left_motor.max_speed)
+
+# move_tank = MoveTank(OUTPUT_A, OUTPUT_B)
 
 ######################
 #                    #
