@@ -12,11 +12,11 @@ from typing import Tuple
 #                #
 ##################
 
-FORWARD_LINE_SPEED = 100
+FORWARD_LINE_SPEED = 40
 FORWARD_SPEED = 25
 
-CONSTANT_P = 4.15
-CONSTANT_I = 2.01
+CONSTANT_P = 5.15
+CONSTANT_I = 1.51
 CONSTANT_D = 4.2
 
 HISTORY_LOSS = 0.5

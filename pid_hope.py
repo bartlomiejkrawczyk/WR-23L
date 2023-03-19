@@ -12,16 +12,16 @@ from typing import Tuple
 #                #
 ##################
 
-FORWARD_SPEED = 20
-TURN_FORWARD_SPEED = 20
+FORWARD_SPEED = 30 # 40
+# TURN_FORWARD_SPEED = 45
 
-CONSTANT_P = 8.0
-CONSTANT_I = 0.45 # 0.9
-CONSTANT_D = 0.003
+CONSTANT_P = 4.0
+CONSTANT_I = 0.01 # 0.45
+CONSTANT_D = 4.0
 
 HISTORY_LOSS = 0.5
 
-AMPLIFIER = 0.125 # 0.10
+AMPLIFIER = 0.25 # 0.10
 
 ###################
 #                 #
@@ -52,6 +52,8 @@ left_sensor = ColorSensor(INPUT_1)
 right_sensor = ColorSensor(INPUT_2)
 
 sensors = [left_sensor, right_sensor]
+
+# move_tank = MoveTank(OUTPUT_A, OUTPUT_B)
 
 ######################
 #                    #
@@ -97,9 +99,11 @@ def iterate(integral: float, last_error: int) -> Tuple[float, int]:
 
     turn_speed = CONSTANT_P * error + CONSTANT_I * integral + CONSTANT_D * derivative
 
-    left_motor.on(FORWARD_SPEED + AMPLIFIER * turn_speed)
+    forward_speed = max(30, 100 - 0.7 * abs(turn_speed))
 
-    right_motor.on(FORWARD_SPEED - AMPLIFIER * turn_speed)
+    left_motor.on(forward_speed + AMPLIFIER * turn_speed)
+
+    right_motor.on(forward_speed - AMPLIFIER * turn_speed)
 
     return integral, last_error
 
