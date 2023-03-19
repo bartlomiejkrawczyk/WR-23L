@@ -60,7 +60,10 @@ def work() -> None:
         if button.is_pressed:
             handle_button_pressed()
         else:
-            iterate()
+            try:
+                iterate()
+            except Exception as e:
+                print(e)
 
 
 def handle_button_pressed() -> None:
