@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_B, SpeedPercent
+from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_B
 from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3
 from ev3dev2.sensor.lego import TouchSensor, ColorSensor
 from ev3dev2.sound import Sound
@@ -12,16 +12,20 @@ from typing import Tuple
 #                #
 ##################
 
-FORWARD_SPEED = 30 # 40
-# TURN_FORWARD_SPEED = 45
+MIN_FORWARD_SPEED = 30
+MAX_FORWARD_SPEED = 100
+
+FORWARD_SPEED_CORRECTION = (
+    (MAX_FORWARD_SPEED - MIN_FORWARD_SPEED) / MAX_FORWARD_SPEED
+)
 
 CONSTANT_P = 4.0
-CONSTANT_I = 0.01 # 0.45
+CONSTANT_I = 0.01
 CONSTANT_D = 4.0
 
 HISTORY_LOSS = 0.5
 
-AMPLIFIER = 0.25 # 0.10
+AMPLIFIER = 0.25
 
 ###################
 #                 #
@@ -99,10 +103,12 @@ def iterate(integral: float, last_error: int) -> Tuple[float, int]:
 
     turn_speed = CONSTANT_P * error + CONSTANT_I * integral + CONSTANT_D * derivative
 
-    forward_speed = max(30, 100 - 0.7 * abs(turn_speed))
+    forward_speed = max(
+        MIN_FORWARD_SPEED,
+        MAX_FORWARD_SPEED - FORWARD_SPEED_CORRECTION * abs(turn_speed)
+    )
 
     left_motor.on(forward_speed + AMPLIFIER * turn_speed)
-
     right_motor.on(forward_speed - AMPLIFIER * turn_speed)
 
     return integral, last_error
