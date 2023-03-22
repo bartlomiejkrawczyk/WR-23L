@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from ev3dev2.motor import LargeMotor, MediumMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C
-from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3
-from ev3dev2.sensor.lego import TouchSensor, ColorSensor
+from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
+from ev3dev2.sensor.lego import TouchSensor, ColorSensor, InfraredSensor
 from ev3dev2.sound import Sound
 
 from typing import Tuple
@@ -66,10 +66,22 @@ right_sensor = ColorSensor(INPUT_2)
 sensors = [left_sensor, right_sensor]
 
 motor = MediumMotor(OUTPUT_C)
+distance_sensor = InfraredSensor(INPUT_4)
 
-motor.on(10)
-sleep(1)
-motor.on(0)
+
+# motor.on_for_rotations(-10, 0.25)
+
+# sleep(2)
+
+# motor.on_for_rotations(10, 0.25)
+
+# sleep(1)
+distance_sensor.mode = distance_sensor.MODE_IR_PROX
+
+# for _ in range(100):
+#     print(distance_sensor.proximity)
+#     sleep(0.1)
+
 
 ################
 #              #
@@ -106,11 +118,11 @@ def work() -> None:
         if button.is_pressed:
             handle_button_pressed()
         else:
-            state, desired_color = iterate(
+            state, desired_color = iteration(
                 state, desired_color, integral, last_error)
 
 
-def iterate(state: int, desired_color: int, integral: float, last_error: int) -> Tuple[int, int]:
+def iteration(state: int, desired_color: int, integral: float, last_error: int) -> Tuple[int, int]:
     colors = detect_colors()
 
     desired_color = 1
@@ -126,6 +138,16 @@ def iterate(state: int, desired_color: int, integral: float, last_error: int) ->
     elif state == TURN_RIGHT:
         if colors[LEFT] == desired_color:
             state = FOLLOW_LINE_UNTIL_DETECTED_OBJECT
+
+    dist = distance_sensor.proximity
+    print(dist)
+    
+    if dist < 2:
+        stop()
+        motor.on_for_rotations(-10, 0.25)
+        sleep(1)
+        motor.on_for_rotations(10, 0.25)
+        return state, desired_color
     
     # print('colors = ', colors)
     # print('state = ', state)
@@ -201,8 +223,8 @@ def follow_line(integral: float, last_error: int) -> Tuple[float, int]:
 
 
 def stop() -> None:
-    for motor in motors:
-        motor.stop()
+    for m in motors:
+        m.stop()
 
 
 def main() -> None:
