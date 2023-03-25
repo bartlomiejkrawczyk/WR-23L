@@ -32,7 +32,7 @@ AMPLIFIER = 0.1
 FROM = ColorSensor.COLOR_RED
 TO = ColorSensor.COLOR_GREEN
 
-SLEEP_MS = 0.025 # 0.1
+SLEEP_MS = 0.025  # 0.1
 
 ###################
 #                 #
@@ -141,14 +141,14 @@ def iteration(state: int, desired_color: int, integral: float, last_error: int) 
 
     dist = distance_sensor.proximity
     print(dist)
-    
+
     if dist < 2:
         stop()
         motor.on_for_rotations(-10, 0.25)
         sleep(1)
         motor.on_for_rotations(10, 0.25)
         return state, desired_color
-    
+
     # print('colors = ', colors)
     # print('state = ', state)
 
@@ -156,7 +156,6 @@ def iteration(state: int, desired_color: int, integral: float, last_error: int) 
         integral, last_error = follow_line(integral, last_error)
     except Exception as e:
         print(e)
-    
 
     # if state in [FOLLOW_LINE_UNTIL_FROM, FOLLOW_LINE_UNTIL_TO, FOLLOW_LINE_UNTIL_DETECTED_OBJECT]:
     #     try:
@@ -190,7 +189,7 @@ def handle_button_pressed() -> None:
 def detect_colors() -> Tuple[int, int]:
     left_sensor._ensure_mode(ColorSensor.MODE_COL_COLOR)
     right_sensor._ensure_mode(ColorSensor.MODE_COL_COLOR)
-    # sleep(0.1)
+    # sleep(SLEEP_MS)
     return (
         left_sensor.color,
         right_sensor.color
@@ -200,7 +199,7 @@ def detect_colors() -> Tuple[int, int]:
 def follow_line(integral: float, last_error: int) -> Tuple[float, int]:
     left_sensor._ensure_mode(ColorSensor.MODE_COL_REFLECT)
     right_sensor._ensure_mode(ColorSensor.MODE_COL_REFLECT)
-    sleep(0.1)
+    sleep(SLEEP_MS)
     error = left_sensor.reflected_light_intensity - \
         right_sensor.reflected_light_intensity
 
