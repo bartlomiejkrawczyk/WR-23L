@@ -3,22 +3,34 @@
 Studenci:
 ```
 Bartłomiej Krawczyk - 310774
-Mateusz Brzozowski - ??????
+Mateusz Brzozowski - 310608
 ```
 
 # Mechanika
 
-## Podstawa matematyczna
-<!-- Opis matematyczny -->
+Robot z napędem różnicowym - dwa niezależnie napędzane koła stałe na jednej osi.
 
-<!-- Zdjęcia + Schemat budowy -->
 ## Schemat
-![Schema](./img/placeholder.png)
+![Schemat](./img/schema.png)
+
+## Podstawa matematyczna
+- $v_p, v_l$ - prędkość liniowa prawego, lewego koła
+- $\omega_p, \omega_l$ - prędkość kątowa prawego, lewego koła
+- $v, \omega$ - prędkość liniowa i kątowa robota
+- $R_C$ - chwilowy promień skrętu robota
+- $d$ - rozstaw kół
+- $r$ - promień koła
+
+$$ v = \frac{v_l + v_p}{2} $$
+
+$$ \omega = \frac{v_l - v_p}{d} $$
+
+$$ R_C = \frac{v}{\omega} = \frac{d(v_l + v_p)}{2 (v_l - v_p)} $$
 
 ## Kod
 <!-- base.py z opisami -->
 
-Najpierw napisaliśmy podstawę do rozwijania kolejnych iteracji naszego kodu. Pozwoliło to nam przy kolejnych iteracjach jedynie kopiować podstawę i dowolnie ją modyfikować według potrzeb. Kod podstawy umieściliśmy w [Baza](./base.py)
+Najpierw napisaliśmy podstawę do rozwijania kolejnych iteracji naszego kodu. Pozwoliło to nam przy kolejnych iteracjach jedynie kopiować podstawę i dowolnie ją modyfikować według potrzeb. Kod podstawy umieściliśmy w pliku [Baza](./base.py)
 
 Kod bazowy umożliwia nam:
 - start programu
@@ -76,15 +88,24 @@ if __name__ == '__main__':
 ```
 
 # Zawody
+## Robot - iteracja I
 
-<!-- Warto wstawić zdjęcie toru - musimy to załatwić na następnych zajęciach. -->
+1                                         | 2
+------------------------------------------|------------------------------------------
+![Fast Line Follower](./img/robot_i1.jpg) | ![Fast Line Follower](./img/robot_i2.jpg)
+![Fast Line Follower](./img/robot_i3.jpg) | ![Fast Line Follower](./img/robot_i4.jpg)
+![Fast Line Follower](./img/robot_i5.jpg) | ![Fast Line Follower](./img/robot_i6.jpg)
+![Fast Line Follower](./img/robot_i7.jpg) | ![Fast Line Follower](./img/robot_i8.jpg)
 
-## Robot
-![Fast Line Follower](./img/placeholder.png)
+## Robot - iteracja II
+1                                         | 2
+------------------------------------------|------------------------------------------
+![Fast Line Follower](./img/robot_t1.jpg) | ![Fast Line Follower](./img/robot_t2.jpg)
+![Fast Line Follower](./img/robot_t3.jpg) | ![Fast Line Follower](./img/robot_t4.jpg)
+![Fast Line Follower](./img/robot_t5.jpg) | ![Fast Line Follower](./img/robot_t6.jpg)
+![Fast Line Follower](./img/robot_t7.jpg) | ![Fast Line Follower](./img/robot_t8.jpg)
 
 ## Kod
-
-<!-- Opisać, że testowaliśmy kilka iteracji rozwiązania -->
 
 ### Kod "Naiwny"
 <!-- Naiwny -->
@@ -141,13 +162,28 @@ P | I | D | ZMIERZONY CZAS
 --|---|---|---------------
 a | b | c | -
 
+<!-- Opisać, że testowaliśmy kilka iteracji rozwiązania -->
+## Tor
+<img
+    src="./img/tournament.jpg" 
+    width="50%" 
+    style="display: block;margin-left: auto;margin-right: auto;"/>
+
+## Wyniki
+
+Team       | Round 1 | Round 2 | Round 3 | Round 4 | Round 5
+-----------|---------|---------|---------|---------|--------
+Parostatek | -       | 28.01   | -       | -       | 29.77
+
+
+
 # Line Follower
 
 ## Kod
 
 <!-- Zmniejszona prędkość względem zawodów, żeby wyrobić się na ostrych zakrętach -->
 
-# Tragarz
+# Transporter
 
 ## Kod
 <!-- Dodaj opis działania -->
