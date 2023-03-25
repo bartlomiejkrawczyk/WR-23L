@@ -70,21 +70,25 @@ def handle_button_pressed() -> None:
 
 
 def iterate() -> None:
-    if left_sensor.color == right_sensor.color:
+    colors = (
+        left_sensor.color,
+        right_sensor.color
+    )
+    if colors[LEFT] == colors[RIGHT]:
         move_tank.on(
             SpeedPercent(FORWARD_SPEED),
             SpeedPercent(FORWARD_SPEED)
         )
-    elif left_sensor.color != ColorSensor.COLOR_BLACK and right_sensor.color != ColorSensor.COLOR_BLACK:
+    elif colors[LEFT] != ColorSensor.COLOR_BLACK and colors[RIGHT] != ColorSensor.COLOR_BLACK:
         move_tank.on(
             SpeedPercent(FORWARD_SPEED),
             SpeedPercent(FORWARD_SPEED)
         )
-    elif left_sensor.color != ColorSensor.COLOR_WHITE and right_sensor.color == ColorSensor.COLOR_WHITE:
+    elif colors[LEFT] != ColorSensor.COLOR_WHITE and colors[RIGHT] == ColorSensor.COLOR_WHITE:
         turn_left()
-    elif left_sensor.color == ColorSensor.COLOR_WHITE and right_sensor.color != ColorSensor.COLOR_WHITE:
+    elif colors[LEFT] == ColorSensor.COLOR_WHITE and colors[RIGHT] != ColorSensor.COLOR_WHITE:
         turn_right()
-    elif left_sensor.color == ColorSensor.COLOR_NOCOLOR or right_sensor.color == ColorSensor.COLOR_NOCOLOR:
+    elif colors[LEFT] == ColorSensor.COLOR_NOCOLOR or colors[RIGHT] == ColorSensor.COLOR_NOCOLOR:
         move_tank.off()
 
 

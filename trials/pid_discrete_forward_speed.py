@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_B, SpeedPercent
+from ev3dev2.motor import LargeMotor, OUTPUT_A, OUTPUT_B
 from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3
 from ev3dev2.sensor.lego import TouchSensor, ColorSensor
 from ev3dev2.sound import Sound
@@ -12,16 +12,16 @@ from typing import Tuple
 #                #
 ##################
 
-FORWARD_SPEED = 40 # 40
-# TURN_FORWARD_SPEED = 45
+FORWARD_SPEED = 30
+MAX_FORWARD_SPEED = 50
 
 CONSTANT_P = 8.0
-CONSTANT_I = 0.9 # 0.9
+CONSTANT_I = 0.45
 CONSTANT_D = 0.003
 
 HISTORY_LOSS = 0.5
 
-AMPLIFIER = 0.125 # 0.10
+AMPLIFIER = 0.10
 
 ###################
 #                 #
@@ -53,10 +53,6 @@ right_sensor = ColorSensor(INPUT_2)
 
 sensors = [left_sensor, right_sensor]
 
-print(left_motor.max_speed)
-
-# move_tank = MoveTank(OUTPUT_A, OUTPUT_B)
-
 ######################
 #                    #
 #    MAIN PROGRAM    #
@@ -77,10 +73,7 @@ def work() -> None:
         if button.is_pressed:
             handle_button_pressed()
         else:
-            try:
-                integral, last_error = iterate(integral, last_error)
-            except Exception as e:
-                print(e)
+            integral, last_error = iterate(integral, last_error)
 
 
 def handle_button_pressed() -> None:
@@ -101,9 +94,14 @@ def iterate(integral: float, last_error: int) -> Tuple[float, int]:
 
     turn_speed = CONSTANT_P * error + CONSTANT_I * integral + CONSTANT_D * derivative
 
-    left_motor.on(FORWARD_SPEED + AMPLIFIER * turn_speed)
+    if abs(turn_speed) > 80:
+        forward_speed = FORWARD_SPEED
+    else:
+        forward_speed = MAX_FORWARD_SPEED
 
-    right_motor.on(FORWARD_SPEED - AMPLIFIER * turn_speed)
+    left_motor.on(forward_speed + AMPLIFIER * turn_speed)
+
+    right_motor.on(forward_speed - AMPLIFIER * turn_speed)
 
     return integral, last_error
 
