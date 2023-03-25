@@ -4,15 +4,18 @@ from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import TouchSensor, ColorSensor, InfraredSensor
 from ev3dev2.sound import Sound
 
-from typing import Tuple
+from typing import Tuple, List
 
 from time import sleep
+import sys
 
 ##################
 #                #
 #    SETTINGS    #
 #                #
 ##################
+
+FORWARD_SPEED_AT_TURNS = 2
 
 MIN_FORWARD_SPEED = 5
 MAX_FORWARD_SPEED = 10
@@ -25,14 +28,37 @@ CONSTANT_P = 4.0
 CONSTANT_I = 0.01
 CONSTANT_D = 4.0
 
-HISTORY_LOSS = 0.5
+HISDROP_DOWNRY_LOSS = 0.5
 
 AMPLIFIER = 0.1
 
-FROM = ColorSensor.COLOR_RED
-TO = ColorSensor.COLOR_GREEN
+ROTATIONS_PER_FULL_ROTATION = 20
+TIME_PER_FULL_ROTATION = 1
+TIME_PER_MODE_CHANGE = 0.025  # 0.1
+TIME_PER_PICK_UP = 1
 
-SLEEP_MS = 0.025  # 0.1
+#: No color.
+# COLOR_NOCOLOR = 0
+#: Black color.
+# COLOR_BLACK = 1
+#: Blue color.
+# COLOR_BLUE = 2
+#: Green color.
+# COLOR_GREEN = 3
+#: Yellow color.
+# COLOR_YELLOW = 4
+#: Red color.
+# COLOR_RED = 5
+#: White color.
+# COLOR_WHITE = 6
+#: Brown color.
+# COLOR_BROWN = 7
+DEFAULT_COLOR_PICK_UP = ColorSensor.COLOR_RED
+DEFAULT_COLOR_DROP_DOWN = ColorSensor.COLOR_BLUE
+
+PICK_UP = 0
+DROP_DOWN = 1
+COLORS: List[int] = []
 
 ###################
 #                 #
@@ -44,6 +70,28 @@ SOUND_VOLUME = 100
 
 LEFT = 0
 RIGHT = 1
+
+WINNING_SONG = (
+    ('D4', 'e3'),      # intro anacrouse
+    ('D4', 'e3'),
+    ('D4', 'e3'),
+    ('G4', 'h'),       # meas 1
+    ('D5', 'h'),
+    ('C5', 'e3'),      # meas 2
+    ('B4', 'e3'),
+    ('A4', 'e3'),
+    ('G5', 'h'),
+    ('D5', 'q'),
+    ('C5', 'e3'),      # meas 3
+    ('B4', 'e3'),
+    ('A4', 'e3'),
+    ('G5', 'h'),
+    ('D5', 'q'),
+    ('C5', 'e3'),      # meas 4
+    ('B4', 'e3'),
+    ('C5', 'e3'),
+    ('A4', 'h.'),
+)
 
 
 #####################
@@ -68,14 +116,6 @@ sensors = [left_sensor, right_sensor]
 motor = MediumMotor(OUTPUT_C)
 distance_sensor = InfraredSensor(INPUT_4)
 
-
-# motor.on_for_rotations(-10, 0.25)
-
-# sleep(2)
-
-# motor.on_for_rotations(10, 0.25)
-
-# sleep(1)
 distance_sensor.mode = distance_sensor.MODE_IR_PROX
 
 # for _ in range(100):
@@ -89,11 +129,12 @@ distance_sensor.mode = distance_sensor.MODE_IR_PROX
 #              #
 ################
 
-FOLLOW_LINE_UNTIL_FROM = 0
-FOLLOW_LINE_UNTIL_TO = 1
-FOLLOW_LINE_UNTIL_DETECTED_OBJECT = 2
-TURN_LEFT = 10
-TURN_RIGHT = 11
+FOLLOW_LINE_UNTIL_PICK_UP = 0
+FOLLOW_LINE_UNTIL_DETECTED_OBJECT = 1
+FOLLOW_LINE_UNTIL_TWO_LINES_DETECTED = 2
+FOLLOW_LINE_UNTIL_DROP_DOWN = 3
+FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED = 4
+STATE_STOP = 5
 
 ######################
 #                    #
@@ -111,71 +152,69 @@ def work() -> None:
     integral = 0.0
     last_error = 0
 
-    state = FOLLOW_LINE_UNTIL_FROM
-    desired_color = FROM
+    state = FOLLOW_LINE_UNTIL_PICK_UP
 
     while True:
         if button.is_pressed:
             handle_button_pressed()
         else:
-            state, desired_color = iteration(
-                state, desired_color, integral, last_error)
+            try:
+                state, integral, last_error = iteration(
+                    state, integral, last_error
+                )
+            except Exception as e:
+                print(e)
 
 
-def iteration(state: int, desired_color: int, integral: float, last_error: int) -> Tuple[int, int]:
-    colors = detect_colors()
-
-    desired_color = 1
-
-    if state == FOLLOW_LINE_UNTIL_FROM:
-        if colors[LEFT] == FROM:
-            state = TURN_LEFT
-        elif colors[RIGHT] == FROM:
-            state = TURN_RIGHT
-    elif state == TURN_LEFT:
-        if colors[RIGHT] == desired_color:
+def iteration(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    if state == FOLLOW_LINE_UNTIL_PICK_UP:
+        colors = detect_colors()
+        if colors[LEFT] == COLORS[PICK_UP]:
+            turn_left()
             state = FOLLOW_LINE_UNTIL_DETECTED_OBJECT
-    elif state == TURN_RIGHT:
-        if colors[LEFT] == desired_color:
+        elif colors[RIGHT] == COLORS[PICK_UP]:
+            turn_right()
             state = FOLLOW_LINE_UNTIL_DETECTED_OBJECT
+        else:
+            integral, last_error = follow_line(integral, last_error)
+    elif state == FOLLOW_LINE_UNTIL_DETECTED_OBJECT:
+        detected_distance = distance()
+        if detected_distance < 2:
+            pick_up()
+            turn_around()
+            state = FOLLOW_LINE_UNTIL_TWO_LINES_DETECTED
+        else:
+            integral, last_error = follow_line(integral, last_error)
+    elif state == FOLLOW_LINE_UNTIL_TWO_LINES_DETECTED:
+        colors = detect_colors()
+        if colors[LEFT] == ColorSensor.COLOR_BLACK and colors[RIGHT] == ColorSensor.COLOR_BLACK:
+            turn_right()
+            state = FOLLOW_LINE_UNTIL_DROP_DOWN
+        else:
+            integral, last_error = follow_line(integral, last_error)
+    elif state == FOLLOW_LINE_UNTIL_DROP_DOWN:
+        colors = detect_colors()
+        if colors[LEFT] == COLORS[DROP_DOWN]:
+            turn_left()
+            state = FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED
+        elif colors[RIGHT] == COLORS[DROP_DOWN]:
+            turn_right()
+            state = FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED
+        else:
+            integral, last_error = follow_line(integral, last_error)
+    elif state == FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED:
+        colors = detect_colors()
+        if colors[LEFT] == COLORS[DROP_DOWN] and colors[RIGHT] == COLORS[DROP_DOWN]:
+            drop_down()
+            sound.play_song(WINNING_SONG)
+            turn_around()
+            state = STATE_STOP
+        else:
+            integral, last_error = follow_line(integral, last_error)
+    else:
+        handle_button_pressed()
 
-    dist = distance_sensor.proximity
-    print(dist)
-
-    if dist < 2:
-        stop()
-        motor.on_for_rotations(-10, 0.25)
-        sleep(1)
-        motor.on_for_rotations(10, 0.25)
-        return state, desired_color
-
-    # print('colors = ', colors)
-    # print('state = ', state)
-
-    try:
-        integral, last_error = follow_line(integral, last_error)
-    except Exception as e:
-        print(e)
-
-    # if state in [FOLLOW_LINE_UNTIL_FROM, FOLLOW_LINE_UNTIL_TO, FOLLOW_LINE_UNTIL_DETECTED_OBJECT]:
-    #     try:
-    #         integral, last_error = follow_line(integral, last_error)
-    #     except Exception as e:
-    #         print(e)
-    # elif state == TURN_RIGHT:
-    #     left_motor.on(0)
-    #     right_motor.on(0)
-    #     sleep(1)
-    #     left_motor.on(-MIN_FORWARD_SPEED)
-    #     right_motor.on(MIN_FORWARD_SPEED)
-    # elif state == TURN_LEFT:
-    #     left_motor.on(0)
-    #     right_motor.on(0)
-    #     sleep(1)
-    #     left_motor.on(MIN_FORWARD_SPEED)
-    #     right_motor.on(MIN_FORWARD_SPEED)
-
-    return state, desired_color
+    return state, integral, last_error
 
 
 def handle_button_pressed() -> None:
@@ -187,9 +226,7 @@ def handle_button_pressed() -> None:
 
 
 def detect_colors() -> Tuple[int, int]:
-    left_sensor._ensure_mode(ColorSensor.MODE_COL_COLOR)
-    right_sensor._ensure_mode(ColorSensor.MODE_COL_COLOR)
-    # sleep(SLEEP_MS)
+    ensure_mode(ColorSensor.MODE_COL_COLOR)
     return (
         left_sensor.color,
         right_sensor.color
@@ -197,13 +234,11 @@ def detect_colors() -> Tuple[int, int]:
 
 
 def follow_line(integral: float, last_error: int) -> Tuple[float, int]:
-    left_sensor._ensure_mode(ColorSensor.MODE_COL_REFLECT)
-    right_sensor._ensure_mode(ColorSensor.MODE_COL_REFLECT)
-    sleep(SLEEP_MS)
+    ensure_mode(ColorSensor.MODE_COL_REFLECT)
     error = left_sensor.reflected_light_intensity - \
         right_sensor.reflected_light_intensity
 
-    integral = HISTORY_LOSS * integral + error
+    integral = HISDROP_DOWNRY_LOSS * integral + error
     derivative = error - last_error
     last_error = error
 
@@ -216,9 +251,58 @@ def follow_line(integral: float, last_error: int) -> Tuple[float, int]:
 
     left_motor.on(forward_speed + AMPLIFIER * turn_speed)
     right_motor.on(forward_speed - AMPLIFIER * turn_speed)
-    sleep(SLEEP_MS)
 
     return integral, last_error
+
+
+def ensure_mode(color: str) -> None:
+    left_sensor.mode = color
+    right_sensor.mode = color
+    sleep(TIME_PER_MODE_CHANGE)
+
+
+def turn(full_roations: float, speed: int) -> None:
+    rotations = ROTATIONS_PER_FULL_ROTATION * full_roations
+    left_motor.on_for_rotations(
+        FORWARD_SPEED_AT_TURNS + speed,
+        rotations
+    )
+    right_motor.on_for_rotations(
+        FORWARD_SPEED_AT_TURNS - speed,
+        rotations
+    )
+    sleep(TIME_PER_FULL_ROTATION * full_roations)
+
+
+def turn_around() -> None:
+    turn(0.5, MIN_FORWARD_SPEED)
+
+
+def turn_left() -> None:
+    turn(0.25, MIN_FORWARD_SPEED)
+
+
+def turn_right() -> None:
+    turn(0.25, -MIN_FORWARD_SPEED)
+
+
+def distance() -> int:
+    return distance_sensor.proximity
+
+
+def pick_up() -> None:
+    stop()
+    motor.on_for_rotations(-10, 0.25)
+    sleep(TIME_PER_PICK_UP)
+
+
+def drop_down() -> None:
+    stop()
+    motor.on_for_rotations(-10, 0.25)
+    sleep(TIME_PER_PICK_UP)
+    for m in motors:
+        m.on_for_rotations(-MIN_FORWARD_SPEED, 1)
+    sleep(TIME_PER_PICK_UP)
 
 
 def stop() -> None:
@@ -241,4 +325,10 @@ def main() -> None:
 
 
 if __name__ == '__main__':
+    if len(sys.argv) > 3:
+        COLORS.append(int(sys.argv[1]))
+        COLORS.append(int(sys.argv[2]))
+    else:
+        COLORS.append(DEFAULT_COLOR_PICK_UP)
+        COLORS.append(DEFAULT_COLOR_DROP_DOWN)
     main()
