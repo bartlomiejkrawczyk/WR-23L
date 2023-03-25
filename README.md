@@ -49,7 +49,10 @@ def work() -> None:
         if button.is_pressed:
             handle_button_pressed()
         else:
-            iterate()
+            try:
+                iterate()
+            except Exception as e:
+                print(e)
 
 
 def handle_button_pressed() -> None:
@@ -108,9 +111,11 @@ if __name__ == '__main__':
 ## Kod
 
 ### Kod "Naiwny"
-<!-- Naiwny -->
-<!-- Opisać, że "naiwny" nazywamy sterowanie jedynie na podstawie koloru - widzimy biały jedziemy - widzimy czarny cofamy dla odpowiedniej strony robota -->
-<!-- Można zwrócić uwagę, że kolor badamy tylko raz na iterację -->
+
+Na samym początku założyliśmy naiwny sposób śledzenia lini - kod dostępny jest w pliku [Naiwny](./trials/naive.py)
+
+Opisać, że "naiwny" nazywamy sterowanie jedynie na podstawie koloru - widzimy biały jedziemy - widzimy czarny cofamy dla odpowiedniej strony robota.
+Można zwrócić uwagę, że kolor badamy tylko raz na iterację
 
 ```py
 FORWARD_SPEED = 30
@@ -149,20 +154,70 @@ def iterate() -> None:
     sleep(SLEEP_SECONDS)
 ```
 
+Przygotowaliśmy kilka iteracji kodu naiwnego, jednak nie sprawdzały się w takim stopniu, jaki chcieliśmy:
+- [Naiwny](./trials/naive_atrocity.py)
+- [Naiwny](./trials/naive_trying_to_be_clever.py)
+- [Naiwny](./trials/naive_pid.py)
+
 ### Kod bazujący na PID
-<!-- PID -->
+
+Przygotowaliśmy także kilka wersji kodu, które działają na bazie PID, opartej o poziom odbitego światła:
+- [Naiwny](./trials/move_tank.py)
+- [Naiwny](./trials/pid_discrete_forward_speed.py)
+- [Naiwny](./trials/pid_trying_to_be_clever.py)
+
+Ostatecznie po dopracowaniu kodu wpadliśmy na pomysł, żeby manipulować prędkość na prostych w zależności od wyliczonej prędkości skrętu. Na odcinkach prostych, gdy prędkość skrętu była bliska 0 jechaliśmy z prędkością maksymalną - `100`, gdy prędkość skrętu wzrastała odpowiednio zmniejszaliśmy prędkość do przodu, tak do osiągnięcia minimalnej prędkości do przodu.
+- [Najszybszy](./tournament/pid_tournament.py)
 
 ```py
+MIN_FORWARD_SPEED = 30
+MAX_FORWARD_SPEED = 100
 
+FORWARD_SPEED_CORRECTION = (
+    (MAX_FORWARD_SPEED - MIN_FORWARD_SPEED) / MAX_FORWARD_SPEED
+)
+
+CONSTANT_P = 4.0
+CONSTANT_I = 0.01
+CONSTANT_D = 4.0
+
+HISTORY_LOSS = 0.5
+
+AMPLIFIER = 0.1
+
+def iterate(integral: float, last_error: int) -> Tuple[float, int]:
+    error = left_sensor.reflected_light_intensity - \
+        right_sensor.reflected_light_intensity
+
+    integral = HISTORY_LOSS * integral + error
+    derivative = error - last_error
+    last_error = error
+
+    turn_speed = CONSTANT_P * error + CONSTANT_I * integral + CONSTANT_D * derivative
+
+    forward_speed = max(
+        MIN_FORWARD_SPEED,
+        MAX_FORWARD_SPEED - FORWARD_SPEED_CORRECTION * abs(turn_speed)
+    )
+
+    left_motor.on(forward_speed + AMPLIFIER * turn_speed)
+    right_motor.on(forward_speed - AMPLIFIER * turn_speed)
+
+    return integral, last_error
 ```
+#### Wpływ parametrów PID
 
-<!-- Wpływ parametrów opisany -->
+- **Parametr P**
+    - parametr brany z największą wagą
+    - oznaczał chwilową różnicę w poziomie odbijanego światła odbieranego przez czujniki
+- **Parametr I**
+    - parametr brany z najmniejszą wagą (ponieważ `integral` był bardzo dużą liczbą w porównaniu do `error` oraz `derivative`)
+    - `integral` przechowywał historię kilku ostatnich iteracji programu, przez co powodował, że jak wyjechaliśmy jedynie w niewielkim stopniu to skręt był niewielki, jednak gdy przez dłuższy czas czujniki wykrywały linię to poziom skrętu zwiększał się
+- **Parametr D**
+    - parametr wynikał z chwilowej zmiany między poziomem lewego i prawego czujnika
+    - parametr miał największy wpływ w przypadku ostrych skrętów
+    - parametr liczył się jedynie przy zmianie między ostatnimi błędami
 
-P | I | D | ZMIERZONY CZAS
---|---|---|---------------
-a | b | c | -
-
-<!-- Opisać, że testowaliśmy kilka iteracji rozwiązania -->
 ## Tor
 <img
     src="./img/tournament.jpg" 
@@ -175,21 +230,46 @@ Team       | Round 1 | Round 2 | Round 3 | Round 4 | Round 5
 -----------|---------|---------|---------|---------|--------
 Parostatek | -       | 28.01   | -       | -       | 29.77
 
-
+### Wnioski
+- najcięższe było dobranie parametrów PID, tak aby robot jeździł z zadowalającą prędkością
 
 # Line Follower
 
 ## Kod
 
-<!-- Zmniejszona prędkość względem zawodów, żeby wyrobić się na ostrych zakrętach -->
+Zmniejszona prędkość względem zawodów, żeby wyrobić się na ostrych zakrętach:
+[Podstawowe PID](./line_follower/pid_basic.py)
+
+```py
+MIN_FORWARD_SPEED = 10
+MAX_FORWARD_SPEED = 20
+
+FORWARD_SPEED_CORRECTION = (
+    (MAX_FORWARD_SPEED - MIN_FORWARD_SPEED) / MAX_FORWARD_SPEED
+)
+
+CONSTANT_P = 4.0
+CONSTANT_I = 0.01
+CONSTANT_D = 4.0
+
+HISTORY_LOSS = 0.5
+
+AMPLIFIER = 0.25
+```
+
+## Tor
+
+<img
+    src="./img/line_follower.jpg" 
+    width="50%" 
+    style="display: block;margin-left: auto;margin-right: auto;"/>
 
 # Transporter
 
 ## Kod
-<!-- Dodaj opis działania -->
 
 ```py
 
 ```
 
-
+## Tor
