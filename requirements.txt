@@ -1,0 +1,4 @@
+autopep8==2.0.2
+Pillow==9.4.0
+pycodestyle==2.10.0
+python-ev3dev2==2.1.0.post1
