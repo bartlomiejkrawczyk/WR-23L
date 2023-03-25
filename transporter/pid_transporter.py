@@ -118,11 +118,6 @@ distance_sensor = InfraredSensor(INPUT_4)
 
 distance_sensor.mode = distance_sensor.MODE_IR_PROX
 
-# for _ in range(100):
-#     print(distance_sensor.proximity)
-#     sleep(0.1)
-
-
 ################
 #              #
 #    STATES    #

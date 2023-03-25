@@ -57,8 +57,6 @@ right_sensor = ColorSensor(INPUT_2)
 
 sensors = [left_sensor, right_sensor]
 
-# move_tank = MoveTank(OUTPUT_A, OUTPUT_B)
-
 ######################
 #                    #
 #    MAIN PROGRAM    #
