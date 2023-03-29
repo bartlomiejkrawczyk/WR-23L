@@ -161,51 +161,90 @@ def work() -> None:
                 print(e)
 
 
+def follow_line_until_pick_up(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    colors = detect_colors()
+    if colors[LEFT] == COLORS[PICK_UP]:
+        turn_left()
+        state = FOLLOW_LINE_UNTIL_DETECTED_OBJECT
+    elif colors[RIGHT] == COLORS[PICK_UP]:
+        turn_right()
+        state = FOLLOW_LINE_UNTIL_DETECTED_OBJECT
+    else:
+        integral, last_error = follow_line(integral, last_error)
+
+    return state, integral, last_error
+
+
+def follow_line_until_detected_object(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    detected_distance = distance()
+    if detected_distance < 2:
+        pick_up()
+        turn_around()
+        state = FOLLOW_LINE_UNTIL_TWO_LINES_DETECTED
+    else:
+        integral, last_error = follow_line(integral, last_error)
+    return state, integral, last_error
+
+
+def follow_line_until_two_lines_detected(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    colors = detect_colors()
+    if colors[LEFT] == ColorSensor.COLOR_BLACK and colors[RIGHT] == ColorSensor.COLOR_BLACK:
+        turn_right()
+        state = FOLLOW_LINE_UNTIL_DROP_DOWN
+    else:
+        integral, last_error = follow_line(integral, last_error)
+
+    return state, integral, last_error
+
+
+def follow_line_until_drop_down(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    colors = detect_colors()
+    if colors[LEFT] == COLORS[DROP_DOWN]:
+        turn_left()
+        state = FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED
+    elif colors[RIGHT] == COLORS[DROP_DOWN]:
+        turn_right()
+        state = FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED
+    else:
+        integral, last_error = follow_line(integral, last_error)
+
+    return state, integral, last_error
+
+
+def follow_line_until_two_drop_down_colors_detected(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    colors = detect_colors()
+    if colors[LEFT] == COLORS[DROP_DOWN] and colors[RIGHT] == COLORS[DROP_DOWN]:
+        drop_down()
+        sound.play_song(WINNING_SONG)
+        turn_around()
+        state = STATE_STOP
+    else:
+        integral, last_error = follow_line(integral, last_error)
+
+    return state, integral, last_error
+
+
 def iteration(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     if state == FOLLOW_LINE_UNTIL_PICK_UP:
-        colors = detect_colors()
-        if colors[LEFT] == COLORS[PICK_UP]:
-            turn_left()
-            state = FOLLOW_LINE_UNTIL_DETECTED_OBJECT
-        elif colors[RIGHT] == COLORS[PICK_UP]:
-            turn_right()
-            state = FOLLOW_LINE_UNTIL_DETECTED_OBJECT
-        else:
-            integral, last_error = follow_line(integral, last_error)
+        state, integral, last_error = follow_line_until_pick_up(
+            state, integral, last_error
+        )
     elif state == FOLLOW_LINE_UNTIL_DETECTED_OBJECT:
-        detected_distance = distance()
-        if detected_distance < 2:
-            pick_up()
-            turn_around()
-            state = FOLLOW_LINE_UNTIL_TWO_LINES_DETECTED
-        else:
-            integral, last_error = follow_line(integral, last_error)
+        state, integral, last_error = follow_line_until_detected_object(
+            state, integral, last_error
+        )
     elif state == FOLLOW_LINE_UNTIL_TWO_LINES_DETECTED:
-        colors = detect_colors()
-        if colors[LEFT] == ColorSensor.COLOR_BLACK and colors[RIGHT] == ColorSensor.COLOR_BLACK:
-            turn_right()
-            state = FOLLOW_LINE_UNTIL_DROP_DOWN
-        else:
-            integral, last_error = follow_line(integral, last_error)
+        state, integral, last_error = follow_line_until_two_lines_detected(
+            state, integral, last_error
+        )
     elif state == FOLLOW_LINE_UNTIL_DROP_DOWN:
-        colors = detect_colors()
-        if colors[LEFT] == COLORS[DROP_DOWN]:
-            turn_left()
-            state = FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED
-        elif colors[RIGHT] == COLORS[DROP_DOWN]:
-            turn_right()
-            state = FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED
-        else:
-            integral, last_error = follow_line(integral, last_error)
+        state, integral, last_error = follow_line_until_drop_down(
+            state, integral, last_error
+        )
     elif state == FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED:
-        colors = detect_colors()
-        if colors[LEFT] == COLORS[DROP_DOWN] and colors[RIGHT] == COLORS[DROP_DOWN]:
-            drop_down()
-            sound.play_song(WINNING_SONG)
-            turn_around()
-            state = STATE_STOP
-        else:
-            integral, last_error = follow_line(integral, last_error)
+        state, integral, last_error = follow_line_until_two_drop_down_colors_detected(
+            state, integral, last_error
+        )
     else:
         handle_button_pressed()
 
