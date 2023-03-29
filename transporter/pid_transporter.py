@@ -15,10 +15,10 @@ import sys
 #                #
 ##################
 
-FORWARD_SPEED_AT_TURNS = 3
+FORWARD_SPEED_AT_TURNS = 5
 
-MIN_FORWARD_SPEED = 5
-MAX_FORWARD_SPEED = 10
+MIN_FORWARD_SPEED = 4
+MAX_FORWARD_SPEED = 8
 
 FORWARD_SPEED_CORRECTION = (
     (MAX_FORWARD_SPEED - MIN_FORWARD_SPEED) / MAX_FORWARD_SPEED
@@ -32,7 +32,7 @@ HISDROP_DOWNRY_LOSS = 0.5
 
 AMPLIFIER = 0.1
 
-ROTATIONS_PER_FULL_ROTATION = 4
+ROTATIONS_PER_FULL_ROTATION = 3.15
 TIME_PER_FULL_ROTATION = 1
 TIME_PER_MODE_CHANGE = 0.025  # 0.1
 TIME_PER_PICK_UP = 1
@@ -191,9 +191,15 @@ def follow_line_until_detected_object(state: int, integral: float, last_error: i
 
 def follow_line_until_two_lines_detected(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     colors = detect_colors()
+    MIN_FORWARD_SPEED = 2
+    MAX_FORWARD_SPEED = 4
+    AMPLIFIER = 0.25
     if colors[LEFT] == ColorSensor.COLOR_BLACK and colors[RIGHT] == ColorSensor.COLOR_BLACK:
         turn_right()
         state = FOLLOW_LINE_UNTIL_DROP_DOWN
+        MIN_FORWARD_SPEED = 4
+        MAX_FORWARD_SPEED = 8
+        AMPLIFIER = 0.1
     else:
         integral, last_error = follow_line(integral, last_error)
 
@@ -297,13 +303,32 @@ def ensure_mode(color: str) -> None:
 def turn(full_roations: float, speed: int) -> None:
     rotations = ROTATIONS_PER_FULL_ROTATION * full_roations
     left_motor.on_for_rotations(
-        FORWARD_SPEED_AT_TURNS + speed,
+        MIN_FORWARD_SPEED,
+        0.1,
+        block=False
+    )
+    right_motor.on_for_rotations(
+        MIN_FORWARD_SPEED,
+        0.1
+    )
+    left_motor.on_for_rotations(
+        speed,
         rotations,
         block=False
     )
     right_motor.on_for_rotations(
-        FORWARD_SPEED_AT_TURNS - speed,
+        - speed,
         rotations,
+    )
+    # if full_roations != 0.5:
+    left_motor.on_for_rotations(
+        MIN_FORWARD_SPEED,
+        0.3,
+        block=False
+    )
+    right_motor.on_for_rotations(
+        MIN_FORWARD_SPEED,
+        0.3
     )
 
 
@@ -329,13 +354,15 @@ def pick_up() -> None:
     sleep(TIME_PER_PICK_UP)
 
 
-def drop_down() -> None:
+def drop_down(back=True) -> None:
     stop()
     motor.on_for_rotations(10, 0.25)
     sleep(TIME_PER_PICK_UP)
-    for m in motors:
-        m.on_for_rotations(-MIN_FORWARD_SPEED, 1, block=False)
-    sleep(TIME_PER_PICK_UP)
+
+    if back:
+        for m in motors:
+            m.on_for_rotations(-MIN_FORWARD_SPEED, 1, block=False)
+        sleep(TIME_PER_PICK_UP)
 
 
 def stop() -> None:
@@ -344,6 +371,9 @@ def stop() -> None:
 
 
 def main() -> None:
+    pick_up()
+    drop_down(False)
+
     sound.set_volume(SOUND_VOLUME)
     speak('READY')
 
