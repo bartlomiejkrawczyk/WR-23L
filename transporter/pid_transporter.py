@@ -224,30 +224,23 @@ def follow_line_until_two_drop_down_colors_detected(state: int, integral: float,
     return state, integral, last_error
 
 
-def iteration(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
-    if state == FOLLOW_LINE_UNTIL_PICK_UP:
-        state, integral, last_error = follow_line_until_pick_up(
-            state, integral, last_error
-        )
-    elif state == FOLLOW_LINE_UNTIL_DETECTED_OBJECT:
-        state, integral, last_error = follow_line_until_detected_object(
-            state, integral, last_error
-        )
-    elif state == FOLLOW_LINE_UNTIL_TWO_LINES_DETECTED:
-        state, integral, last_error = follow_line_until_two_lines_detected(
-            state, integral, last_error
-        )
-    elif state == FOLLOW_LINE_UNTIL_DROP_DOWN:
-        state, integral, last_error = follow_line_until_drop_down(
-            state, integral, last_error
-        )
-    elif state == FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED:
-        state, integral, last_error = follow_line_until_two_drop_down_colors_detected(
-            state, integral, last_error
-        )
-    else:
-        handle_button_pressed()
+ITERATION_FUNCTION = {
+    FOLLOW_LINE_UNTIL_PICK_UP: follow_line_until_pick_up,
+    FOLLOW_LINE_UNTIL_DETECTED_OBJECT: follow_line_until_detected_object,
+    FOLLOW_LINE_UNTIL_TWO_LINES_DETECTED: follow_line_until_two_lines_detected,
+    FOLLOW_LINE_UNTIL_DROP_DOWN: follow_line_until_drop_down,
+    FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED: follow_line_until_two_drop_down_colors_detected,
+}
 
+
+def stop_robot(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    handle_button_pressed()
+    return state, integral, last_error
+
+
+def iteration(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    function = ITERATION_FUNCTION.get(state, stop_robot)
+    state, integral, last_error = function(state, integral, last_error)
     return state, integral, last_error
 
 
