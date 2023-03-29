@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from ev3dev2.motor import LargeMotor, MediumMotor, OUTPUT_A, OUTPUT_B, OUTPUT_C
+from ev3dev2.motor import LargeMotor, MediumMotor, OUTPUT_A, OUTPUT_B, OUTPUT_D
 from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import TouchSensor, ColorSensor, InfraredSensor
 from ev3dev2.sound import Sound
@@ -15,7 +15,7 @@ import sys
 #                #
 ##################
 
-FORWARD_SPEED_AT_TURNS = 2
+FORWARD_SPEED_AT_TURNS = 3
 
 MIN_FORWARD_SPEED = 5
 MAX_FORWARD_SPEED = 10
@@ -32,7 +32,7 @@ HISDROP_DOWNRY_LOSS = 0.5
 
 AMPLIFIER = 0.1
 
-ROTATIONS_PER_FULL_ROTATION = 20
+ROTATIONS_PER_FULL_ROTATION = 4
 TIME_PER_FULL_ROTATION = 1
 TIME_PER_MODE_CHANGE = 0.025  # 0.1
 TIME_PER_PICK_UP = 1
@@ -53,12 +53,12 @@ TIME_PER_PICK_UP = 1
 # COLOR_WHITE = 6
 #: Brown color.
 # COLOR_BROWN = 7
-DEFAULT_COLOR_PICK_UP = ColorSensor.COLOR_RED
-DEFAULT_COLOR_DROP_DOWN = ColorSensor.COLOR_BLUE
+DEFAULT_COLOR_PICK_UP = ColorSensor.COLOR_GREEN
+DEFAULT_COLOR_DROP_DOWN = ColorSensor.COLOR_RED
 
 PICK_UP = 0
 DROP_DOWN = 1
-COLORS: List[int] = []
+COLORS = []
 
 ###################
 #                 #
@@ -113,7 +113,7 @@ right_sensor = ColorSensor(INPUT_2)
 
 sensors = [left_sensor, right_sensor]
 
-motor = MediumMotor(OUTPUT_C)
+motor = MediumMotor(OUTPUT_D)
 distance_sensor = InfraredSensor(INPUT_4)
 
 distance_sensor.mode = distance_sensor.MODE_IR_PROX
@@ -152,6 +152,9 @@ def work() -> None:
     while True:
         if button.is_pressed:
             handle_button_pressed()
+            integral = 0.0
+            last_error = 0
+            state = FOLLOW_LINE_UNTIL_PICK_UP
         else:
             try:
                 state, integral, last_error = iteration(
@@ -235,6 +238,9 @@ ITERATION_FUNCTION = {
 
 def stop_robot(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     handle_button_pressed()
+    state = FOLLOW_LINE_UNTIL_PICK_UP
+    integral = 0.0
+    last_error = 0
     return state, integral, last_error
 
 
@@ -292,25 +298,25 @@ def turn(full_roations: float, speed: int) -> None:
     rotations = ROTATIONS_PER_FULL_ROTATION * full_roations
     left_motor.on_for_rotations(
         FORWARD_SPEED_AT_TURNS + speed,
-        rotations
+        rotations,
+        block=False
     )
     right_motor.on_for_rotations(
         FORWARD_SPEED_AT_TURNS - speed,
-        rotations
+        rotations,
     )
-    sleep(TIME_PER_FULL_ROTATION * full_roations)
 
 
 def turn_around() -> None:
-    turn(0.5, MIN_FORWARD_SPEED)
+    turn(0.5, MAX_FORWARD_SPEED)
 
 
 def turn_left() -> None:
-    turn(0.25, MIN_FORWARD_SPEED)
+    turn(0.25, -MAX_FORWARD_SPEED)
 
 
 def turn_right() -> None:
-    turn(0.25, -MIN_FORWARD_SPEED)
+    turn(0.25, MAX_FORWARD_SPEED)
 
 
 def distance() -> int:
@@ -325,10 +331,10 @@ def pick_up() -> None:
 
 def drop_down() -> None:
     stop()
-    motor.on_for_rotations(-10, 0.25)
+    motor.on_for_rotations(10, 0.25)
     sleep(TIME_PER_PICK_UP)
     for m in motors:
-        m.on_for_rotations(-MIN_FORWARD_SPEED, 1)
+        m.on_for_rotations(-MIN_FORWARD_SPEED, 1, block=False)
     sleep(TIME_PER_PICK_UP)
 
 
