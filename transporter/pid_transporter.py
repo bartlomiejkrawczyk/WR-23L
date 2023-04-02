@@ -156,12 +156,9 @@ def work() -> None:
             last_error = 0
             state = FOLLOW_LINE_UNTIL_PICK_UP
         else:
-            try:
-                state, integral, last_error = iteration(
-                    state, integral, last_error
-                )
-            except Exception as e:
-                print(e)
+            state, integral, last_error = iteration(
+                state, integral, last_error
+            )
 
 
 def follow_line_until_pick_up(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
