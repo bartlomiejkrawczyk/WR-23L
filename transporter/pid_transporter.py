@@ -4,7 +4,7 @@ from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import TouchSensor, ColorSensor, InfraredSensor
 from ev3dev2.sound import Sound
 
-from typing import Tuple, List
+from typing import Tuple
 
 from time import sleep
 import sys
@@ -72,22 +72,22 @@ LEFT = 0
 RIGHT = 1
 
 WINNING_SONG = (
-    ('D4', 'e3'),      # intro anacrouse
+    ('D4', 'e3'),  # intro anacrouse
     ('D4', 'e3'),
     ('D4', 'e3'),
-    ('G4', 'h'),       # meas 1
+    ('G4', 'h'),   # meas 1
     ('D5', 'h'),
-    ('C5', 'e3'),      # meas 2
+    ('C5', 'e3'),  # meas 2
     ('B4', 'e3'),
     ('A4', 'e3'),
     ('G5', 'h'),
     ('D5', 'q'),
-    ('C5', 'e3'),      # meas 3
+    ('C5', 'e3'),  # meas 3
     ('B4', 'e3'),
     ('A4', 'e3'),
     ('G5', 'h'),
     ('D5', 'q'),
-    ('C5', 'e3'),      # meas 4
+    ('C5', 'e3'),  # meas 4
     ('B4', 'e3'),
     ('C5', 'e3'),
     ('A4', 'h.'),
@@ -191,15 +191,9 @@ def follow_line_until_detected_object(state: int, integral: float, last_error: i
 
 def follow_line_until_two_lines_detected(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     colors = detect_colors()
-    MIN_FORWARD_SPEED = 2
-    MAX_FORWARD_SPEED = 4
-    AMPLIFIER = 0.25
     if colors[LEFT] == ColorSensor.COLOR_BLACK and colors[RIGHT] == ColorSensor.COLOR_BLACK:
         turn_right()
         state = FOLLOW_LINE_UNTIL_DROP_DOWN
-        MIN_FORWARD_SPEED = 4
-        MAX_FORWARD_SPEED = 8
-        AMPLIFIER = 0.1
     else:
         integral, last_error = follow_line(integral, last_error)
 
@@ -302,15 +296,7 @@ def ensure_mode(color: str) -> None:
 
 def turn(full_roations: float, speed: int) -> None:
     rotations = ROTATIONS_PER_FULL_ROTATION * full_roations
-    left_motor.on_for_rotations(
-        MIN_FORWARD_SPEED,
-        0.1,
-        block=False
-    )
-    right_motor.on_for_rotations(
-        MIN_FORWARD_SPEED,
-        0.1
-    )
+    forward_for_rotations(0.1)
     left_motor.on_for_rotations(
         speed,
         rotations,
@@ -320,15 +306,18 @@ def turn(full_roations: float, speed: int) -> None:
         - speed,
         rotations,
     )
-    # if full_roations != 0.5:
+    forward_for_rotations(0.3)
+
+
+def forward_for_rotations(rotations: float) -> None:
     left_motor.on_for_rotations(
         MIN_FORWARD_SPEED,
-        0.3,
+        rotations,
         block=False
     )
     right_motor.on_for_rotations(
         MIN_FORWARD_SPEED,
-        0.3
+        rotations
     )
 
 
@@ -354,7 +343,7 @@ def pick_up() -> None:
     sleep(TIME_PER_PICK_UP)
 
 
-def drop_down(back=True) -> None:
+def drop_down(back: bool = True) -> None:
     stop()
     motor.on_for_rotations(10, 0.25)
     sleep(TIME_PER_PICK_UP)
