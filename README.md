@@ -268,8 +268,125 @@ AMPLIFIER = 0.25
 
 ## Kod
 
+Zdefniowaliśmy stany:
 ```py
+################
+#              #
+#    STATES    #
+#              #
+################
 
+FOLLOW_LINE_UNTIL_PICK_UP = 0
+FOLLOW_LINE_UNTIL_DETECTED_OBJECT = 1
+FOLLOW_LINE_UNTIL_TWO_LINES_DETECTED = 2
+FOLLOW_LINE_UNTIL_DROP_DOWN = 3
+FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED = 4
+STATE_STOP = 5
+```
+
+Zaktualizowaliśmy główną pętlę:
+```py
+def work() -> None:
+    integral = 0.0
+    last_error = 0
+
+    state = FOLLOW_LINE_UNTIL_PICK_UP
+
+    while True:
+        if button.is_pressed:
+            handle_button_pressed()
+            integral = 0.0
+            last_error = 0
+            state = FOLLOW_LINE_UNTIL_PICK_UP
+        else:
+            state, integral, last_error = iteration(
+                state, integral, last_error
+            )
+```
+
+W pętli na podstawie stanu wołaliśmy odpowiednią funkcję obsługi:
+```py
+ITERATION_FUNCTION = {
+    FOLLOW_LINE_UNTIL_PICK_UP: follow_line_until_pick_up,
+    FOLLOW_LINE_UNTIL_DETECTED_OBJECT: follow_line_until_detected_object,
+    FOLLOW_LINE_UNTIL_TWO_LINES_DETECTED: follow_line_until_two_lines_detected,
+    FOLLOW_LINE_UNTIL_DROP_DOWN: follow_line_until_drop_down,
+    FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED: follow_line_until_two_drop_down_colors_detected,
+}
+
+
+def iteration(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    function = ITERATION_FUNCTION.get(state, stop_robot)
+    state, integral, last_error = function(state, integral, last_error)
+    return state, integral, last_error
+```
+
+Dla każdego stanu zdefniowaliśmy obsługę:
+```py
+def follow_line_until_pick_up(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    colors = detect_colors()
+    if colors[LEFT] == COLORS[PICK_UP]:
+        turn_left()
+        state = FOLLOW_LINE_UNTIL_DETECTED_OBJECT
+    elif colors[RIGHT] == COLORS[PICK_UP]:
+        turn_right()
+        state = FOLLOW_LINE_UNTIL_DETECTED_OBJECT
+    else:
+        integral, last_error = follow_line(integral, last_error)
+
+    return state, integral, last_error
+```
+
+```py
+def follow_line_until_detected_object(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    detected_distance = distance()
+    if detected_distance < 2:
+        pick_up()
+        turn_around()
+        state = FOLLOW_LINE_UNTIL_TWO_LINES_DETECTED
+    else:
+        integral, last_error = follow_line(integral, last_error)
+    return state, integral, last_error
+```
+
+```py
+def follow_line_until_two_lines_detected(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    colors = detect_colors()
+    if colors[LEFT] == ColorSensor.COLOR_BLACK and colors[RIGHT] == ColorSensor.COLOR_BLACK:
+        turn_right()
+        state = FOLLOW_LINE_UNTIL_DROP_DOWN
+    else:
+        integral, last_error = follow_line(integral, last_error)
+
+    return state, integral, last_error
+```
+```py
+def follow_line_until_drop_down(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    colors = detect_colors()
+    if colors[LEFT] == COLORS[DROP_DOWN]:
+        turn_left()
+        state = FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED
+    elif colors[RIGHT] == COLORS[DROP_DOWN]:
+        turn_right()
+        state = FOLLOW_LINE_UNTIL_TWO_DROP_DOWN_COLORS_DETECTED
+    else:
+        integral, last_error = follow_line(integral, last_error)
+
+    return state, integral, last_error
+```
+
+```py
+def follow_line_until_two_drop_down_colors_detected(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    colors = detect_colors()
+    if colors[LEFT] == COLORS[DROP_DOWN] and colors[RIGHT] == COLORS[DROP_DOWN]:
+        drop_down()
+        sound.play_song(WINNING_SONG)
+        turn_around()
+        state = STATE_STOP
+    else:
+        integral, last_error = follow_line(integral, last_error)
+
+    return state, integral, last_error
 ```
 
 ## Tor
