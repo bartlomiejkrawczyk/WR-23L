@@ -322,6 +322,12 @@ def iteration(state: int, integral: float, last_error: int) -> Tuple[int, float,
 ```
 
 Dla każdego stanu zdefniowaliśmy obsługę:
+
+- Śledzenie lini z wykorzystaniem algorytmu korzystającego z PID, dopóki nie napotkamy koloru z którego powinniśmy podnieść przedmiot
+- Gdy odpowiednio na lewym lub prawym czujniku wykryjemy dany kolor to zaczynamy obracać się w tym kierunku
+- Obrót o 90 stopni jest wyliczony i zawsze wykonywane jest tyle samo obrotów kół - zakładamy brak poślizgu
+- Następnie aktualizowany jest stan - średzenie lini dopóki nie napotkamy obiektu
+
 ```py
 def follow_line_until_pick_up(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     colors = detect_colors()
@@ -337,6 +343,8 @@ def follow_line_until_pick_up(state: int, integral: float, last_error: int) -> T
     return state, integral, last_error
 ```
 
+- Śledzenie lini z wykorzystaniem PID dopóki czujnik odległości nie wykryje przedmiotu w odległości 1 od przodu robota
+- Gdy odległość jest wystarczająco bliska to podnosimy przedmiot, obracamy się o 180 stopni (wyliczona ilość obrotów kół) i przechodzimy do następnego stanu
 ```py
 def follow_line_until_detected_object(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     detected_distance = distance()
@@ -349,6 +357,8 @@ def follow_line_until_detected_object(state: int, integral: float, last_error: i
     return state, integral, last_error
 ```
 
+- Po podniesieniu przedmiotu śledziliśmy linię dopóki nie napotkamy na obu czujnikach koloru - koloru czarnego - oznaczało, to że dojechaliśmy do skrzyżowania
+- na skrzyżowaniu skręcaliśmy w prawo, a następnie przechodziliśmy do kolejnego stanu
 ```py
 def follow_line_until_two_lines_detected(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     colors = detect_colors()
@@ -360,6 +370,9 @@ def follow_line_until_two_lines_detected(state: int, integral: float, last_error
 
     return state, integral, last_error
 ```
+
+- Podobnie jak w stanie pierwszym śledziliśmy linię dopóki na jednym z czujników nie wykryjemy koloru na który należy odłożyć przedmiot
+- Gdy wykryjemy kolor to skręcamy w odpowiednią stronę i przechodzimy do następnego stanu
 ```py
 def follow_line_until_drop_down(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     colors = detect_colors()
@@ -375,6 +388,8 @@ def follow_line_until_drop_down(state: int, integral: float, last_error: int) ->
     return state, integral, last_error
 ```
 
+- Na sam koniec pozostało śledzenie lini dopóki nie wykryjemy na obu czujnikach koloru - koloru docelowego
+- Gdy wykryjemy ten kolor to odkładamy przedmiot, puszczamy muzykę i obracamy się w miejscu, po czym zatrzumujemy robota
 ```py
 def follow_line_until_two_drop_down_colors_detected(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     colors = detect_colors()
@@ -388,5 +403,80 @@ def follow_line_until_two_drop_down_colors_detected(state: int, integral: float,
 
     return state, integral, last_error
 ```
+
+- W ostatnim stanie resetujemy ustawienie robota i oczekujemy na przycisk, aby robot mógł wystartować ponownie
+```py
+def stop_robot(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
+    handle_button_pressed()
+    state = FOLLOW_LINE_UNTIL_PICK_UP
+    integral = 0.0
+    last_error = 0
+    return state, integral, last_error
+```
+
+Funkcje pomocnicze:
+
+Wykrywanie kolorów
+- mieliśmy problem z kolorem wykrywanym przez migające na zmianę czujniki
+- aby ujednolicić pomiary najpierw zmienialiśmy tryb wykrywania czujników, a następnie dopiero wykrywaliśmy kolor
+```py
+def detect_colors() -> Tuple[int, int]:
+    ensure_mode(ColorSensor.MODE_COL_COLOR)
+    return (
+        left_sensor.color,
+        right_sensor.color
+    )
+
+def ensure_mode(color: str) -> None:
+    left_sensor.mode = color
+    right_sensor.mode = color
+    sleep(TIME_PER_MODE_CHANGE)
+```
+
+Stała ilość rotacji w miejscu:
+- ponieważ czujniki są minimalnie przesunięte do przodu względem osi kół, to przed obrotem jedziemy minimalnie do przodu, aby po obrocie robot skończył z czujnikami wokół lini
+- podobnie po skończonym obrocie jasność kolorów na które wjeżdżamy nie zawsze pozwalała nam na dobre rozróżnianie tych kolorów od koloru białego za pomocą czujników odbijających światło czerwone - więc rozwiązaliśmy to przejechaniem przez ten kolor po prostej i dopiero gdy dojechaliśmy do koloru czarnego załączało się dalsze śledzenie lini
+```py
+ROTATIONS_PER_FULL_ROTATION = 3.15
+
+def turn(full_roations: float, speed: int) -> None:
+    rotations = ROTATIONS_PER_FULL_ROTATION * full_roations
+    forward_for_rotations(0.1)
+    left_motor.on_for_rotations(
+        speed,
+        rotations,
+        block=False
+    )
+    right_motor.on_for_rotations(
+        - speed,
+        rotations,
+    )
+    forward_for_rotations(0.3)
+
+
+def forward_for_rotations(rotations: float) -> None:
+    left_motor.on_for_rotations(
+        MIN_FORWARD_SPEED,
+        rotations,
+        block=False
+    )
+    right_motor.on_for_rotations(
+        MIN_FORWARD_SPEED,
+        rotations
+    )
+
+
+def turn_around() -> None:
+    turn(0.5, MAX_FORWARD_SPEED)
+
+
+def turn_left() -> None:
+    turn(0.25, -MAX_FORWARD_SPEED)
+
+
+def turn_right() -> None:
+    turn(0.25, MAX_FORWARD_SPEED)
+```
+
 
 ## Tor
