@@ -93,20 +93,36 @@ if __name__ == '__main__':
 # Zawody
 ## Robot - iteracja I
 
-1                                         | 2
-------------------------------------------|------------------------------------------
-![Fast Line Follower](./img/robot_i1.jpg) | ![Fast Line Follower](./img/robot_i2.jpg)
-![Fast Line Follower](./img/robot_i3.jpg) | ![Fast Line Follower](./img/robot_i4.jpg)
-![Fast Line Follower](./img/robot_i5.jpg) | ![Fast Line Follower](./img/robot_i6.jpg)
-![Fast Line Follower](./img/robot_i7.jpg) | ![Fast Line Follower](./img/robot_i8.jpg)
+
+![](./img/robot_i1.jpg){width=50%}\ ![](./img/robot_i2.jpg){width=50%}
+![](./img/robot_i3.jpg){width=50%}\ ![](./img/robot_i4.jpg){width=50%}
+
+\begin{figure}[!h]
+\caption{Pierwsza iteracja robota - z kołem samonastawnym}
+\end{figure}
+
+![](./img/robot_i5.jpg){width=50%}\ ![](./img/robot_i6.jpg){width=50%}
+![](./img/robot_i7.jpg){width=50%}\ ![](./img/robot_i8.jpg){width=50%}
+
+\begin{figure}[!h]
+\caption{Pierwsza iteracja robota - z kołem samonastawnym}
+\end{figure}
 
 ## Robot - iteracja II
-1                                         | 2
-------------------------------------------|------------------------------------------
-![Fast Line Follower](./img/robot_t1.jpg) | ![Fast Line Follower](./img/robot_t2.jpg)
-![Fast Line Follower](./img/robot_t3.jpg) | ![Fast Line Follower](./img/robot_t4.jpg)
-![Fast Line Follower](./img/robot_t5.jpg) | ![Fast Line Follower](./img/robot_t6.jpg)
-![Fast Line Follower](./img/robot_t7.jpg) | ![Fast Line Follower](./img/robot_t8.jpg)
+![Fast Line Follower](./img/robot_t1.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t2.jpg){width=50%}
+![Fast Line Follower](./img/robot_t3.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t4.jpg){width=50%}
+
+\begin{figure}[!h]
+\caption{Druga iteracja robota - z kulą zamiast koła wspierającego}
+\end{figure}
+
+![Fast Line Follower](./img/robot_t5.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t6.jpg){width=50%}
+![Fast Line Follower](./img/robot_t7.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t8.jpg){width=50%}
+
+\begin{figure}[!h]
+\caption{Druga iteracja robota - z kulą zamiast koła wspierającego}
+\end{figure}
+
 
 ## Kod
 
