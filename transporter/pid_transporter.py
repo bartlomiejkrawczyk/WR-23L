@@ -37,21 +37,13 @@ TIME_PER_FULL_ROTATION = 1
 TIME_PER_MODE_CHANGE = 0.025  # 0.1
 TIME_PER_PICK_UP = 1
 
-#: No color.
 # COLOR_NOCOLOR = 0
-#: Black color.
 # COLOR_BLACK = 1
-#: Blue color.
 # COLOR_BLUE = 2
-#: Green color.
 # COLOR_GREEN = 3
-#: Yellow color.
 # COLOR_YELLOW = 4
-#: Red color.
 # COLOR_RED = 5
-#: White color.
 # COLOR_WHITE = 6
-#: Brown color.
 # COLOR_BROWN = 7
 DEFAULT_COLOR_PICK_UP = ColorSensor.COLOR_GREEN
 DEFAULT_COLOR_DROP_DOWN = ColorSensor.COLOR_RED
