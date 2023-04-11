@@ -6,6 +6,10 @@ Bartłomiej Krawczyk - 310774
 Mateusz Brzozowski - 310608
 ```
 
+Nazwa robota:
+
+- `Parostatek`
+
 # Mechanika
 
 Robot z napędem różnicowym - dwa niezależnie napędzane koła stałe na jednej osi.
@@ -221,6 +225,7 @@ def iterate(integral: float, last_error: int) -> Tuple[float, int]:
 
     return integral, last_error
 ```
+
 #### Wpływ parametrów PID
 
 - **Parametr P**
@@ -234,10 +239,36 @@ def iterate(integral: float, last_error: int) -> Tuple[float, int]:
     - parametr miał największy wpływ w przypadku ostrych skrętów
     - parametr liczył się jedynie przy zmianie między ostatnimi błędami
 
+## Dobieranie parametrów
+
+Parametry PID, które zastosowaliśmy w naszym robocie, zostały dobrane metodą inżynieryjną, czyli przez serię prób i błędów. Zastosowaliśmy podejście iteracyjne, w którym kolejne wartości parametrów były ustalane na podstawie wyników testów oraz obserwacji zachowania robota.
+
+W zależności od rodzaju zadania, dla którego był przeznaczony robot, dobieraliśmy parametry PID w inny sposób. Na przykład, podczas zawodów głównie skupialiśmy się na zwiększaniu prędkości przy okazji odpowiednio modyfikując parametr D, ponieważ tor nie posiadał ostrych zakrętów. Zwiększaliśmy również parametr I, aby nasz robot na odcinkach prostych mógł osiągnąć jak największą prędkość. W przypadku parametrów D i I staraliśmy się dobrać odpowiednią wartość na podstawie doświadczenia.
+
+W zadaniu Line Follower skupiliśmy się na dostosowaniu wartości parametrów P i D, ponieważ było tam dużo ostrych zakrętów. Zaczęliśmy od wartości, które sprawdziły się podczas zawodów, a następnie stosowaliśmy iteracyjną metodę doboru wartości parametrów, aż do osiągnięcia idealnych wartości, które okazały się takie same jak wartości początkowe. W tym przypadku jedyną zmianą, jaką wprowadziliśmy, było zmniejszenie prędkości ruchu robota.
+
+W ostatnim zadaniu pozostawiliśmy parametry prawie takie same jak w poprzednim zadaniu, jednakże zmniejszyliśmy prędkość ruchu robota. W przypadku tego zadania dodatkowo musieliśmy wyznaczyć czas w jakim nasz robot robi pełen obrót o 360 stopni, tak aby w prosty sposób dokonywać obrotów w prawo/lewo, a także zawracania.
+
+
+## Schemat blokowy PID
+
+```mermaid
+flowchart
+    input("Setpoint") --> A{Calculate error}
+    A --> D("integral = HISTORY_LOSS * integral + error \n derivative = error - last_error \n last_error = error")
+    D --> E{Calculate turn_speed}
+    E --> F(turn_speed = CONSTANT_P * error + CONSTANT_I * integral + CONSTANT_D * derivative)
+    F --> G{Calculate forward_speed}
+    G --> H("forward_speed = max(MIN_FORWARD_SPEED, MAX_FORWARD_SPEED - FORWARD_SPEED_CORRECTION * abs(turn_speed))")
+    H --> I{Set motor speed}
+    I --> K("output \n left_motor.on(forward_speed + AMPLIFIER * turn_speed) \n right_motor.on(forward_speed - AMPLIFIER * turn_speed)")
+    I --> A
+```
+
 ## Tor
 <img
-    src="./img/tournament.jpg" 
-    width="50%" 
+    src="./img/tournament.jpg"
+    width="50%"
     style="display: block;margin-left: auto;margin-right: auto;"/>
 
 ## Wyniki
@@ -276,11 +307,26 @@ AMPLIFIER = 0.25
 ## Tor
 
 <img
-    src="./img/line_follower.jpg" 
-    width="50%" 
+    src="./img/line_follower.jpg"
+    width="50%"
     style="display: block;margin-left: auto;margin-right: auto;"/>
 
 # Transporter
+
+W tym etapie przebudowaliśmy trochę nasz robot w taki sposób, aby mógł przewozić on wykrywać i przewozić zbudowany przez nas przedmiot.
+
+![](./img/robot_tr1.jpg){width=50%}
+
+![](./img/robot_tr2.jpg){width=50%}
+
+![](./img/robot_tr3.jpg){width=50%}
+
+![](./img/robot_tr4.jpg){width=50%}
+
+
+## Działający robot
+
+[LINK DO NAGRANIA NA YOUTUBE](https://youtu.be/3knkUJOpiRk)
 
 ## Kod
 
@@ -515,6 +561,3 @@ def turn_left() -> None:
 def turn_right() -> None:
     turn(0.25, MAX_FORWARD_SPEED)
 ```
-
-
-## Tor
