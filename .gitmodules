@@ -1,0 +1,3 @@
+[submodule "wut-thesis-pandoc"]
+	path = wut-thesis-pandoc
+	url = https://github.com/mRokita/wut-thesis-pandoc.git
