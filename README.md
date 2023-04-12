@@ -1,3 +1,4 @@
+\newpage
 # Wstęp do Robotyki
 
 Studenci:
@@ -10,12 +11,15 @@ Nazwa robota:
 
 - `Parostatek`
 
+\newpage
+
 # Mechanika
 
 Robot z napędem różnicowym - dwa niezależnie napędzane koła stałe na jednej osi.
 
 ## Schemat
-![Schemat](./img/schema.png)
+
+![Schemat](./img/schema.png){width=75%}
 
 ## Podstawa matematyczna
 - $v_p, v_l$ - prędkość liniowa prawego, lewego koła
@@ -105,12 +109,16 @@ if __name__ == '__main__':
 \caption{Pierwsza iteracja robota - z kołem samonastawnym}
 \end{figure}
 
+\newpage
+
 ![](./img/robot_i5.jpg){width=50%}\ ![](./img/robot_i6.jpg){width=50%}
 ![](./img/robot_i7.jpg){width=50%}\ ![](./img/robot_i8.jpg){width=50%}
 
 \begin{figure}[!h]
 \caption{Pierwsza iteracja robota - z kołem samonastawnym}
 \end{figure}
+
+\newpage
 
 ## Robot - iteracja II
 ![Fast Line Follower](./img/robot_t1.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t2.jpg){width=50%}
@@ -120,6 +128,8 @@ if __name__ == '__main__':
 \caption{Druga iteracja robota - z kulą zamiast koła wspierającego}
 \end{figure}
 
+\newpage
+
 ![Fast Line Follower](./img/robot_t5.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t6.jpg){width=50%}
 ![Fast Line Follower](./img/robot_t7.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t8.jpg){width=50%}
 
@@ -127,6 +137,7 @@ if __name__ == '__main__':
 \caption{Druga iteracja robota - z kulą zamiast koła wspierającego}
 \end{figure}
 
+\newpage
 
 ## Kod
 
