@@ -20,7 +20,8 @@ exit 0;
 }
 
 install () {
-    sudo apt install texlive-full pandoc pandoc-citeproc -y
+    sudo apt install texlive-full pandoc pandoc-citeproc npm -y
+    sudo npm i -g mermaid-filter || echo "Error downloading mermaid-filter"
 }
 
 fetch_submodule () {
@@ -75,6 +76,9 @@ pandoc ../$INPUT \
     --metadata-file=../$CONFIG \
     --pdf-engine=latexmk \
     --from markdown \
+    -F mermaid-filter \
     --template include/wut-template.tex
+
+rm mermaid-filter.err
 
 cd ..

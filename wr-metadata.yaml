@@ -1,54 +1,27 @@
 # Informacje dotyczące pracy:
-title-pl: "Aplikacja mobilna umożliwiająca rozgrywkę on-line w gry logiczne na szachownicy"
-title-en: "A mobile application that allows you to play logic games on-line on a chessboard"
-author: "Bartłomiej Krawczyk"
-album: "310774"
+title-pl: "TODO"
+title-en: "TODO"
+author: "Bartłomiej Krawczyk, Mateusz Brzozowski"
+album: "310774, 310678"
 institute: "Automatyki i Informatyki Stosowanej"
 faculty: "eiti"
 speciality: "Inżynieria Oprogramowania"
 subject: "Informatyka"
-promotor: "Szymon Kijas"
+promotor: ""
 abstract-pl: |
-  Celem pracy jest wykonanie projektu wielowarstwowej aplikacji mobilnej umożliwiającej rozgrywkę na szachownicy oraz jej implementacja. 
-  Aplikacja powinna umożliwiać rozgrywkę w podstawowe typy gier takie jak szachy i warcaby.
-  Ponadto rozwiązanie powinno pozwalać na definiowanie innych typów gier (np. w oparciu o zmienione zasady rozgrywki, nietypowy rozmiar planszy lub liczbę graczy większą niż dwóch).
+  TODO
 
 
-
-abstract-en: |
-  The aim of the work is to design a multi-layer mobile application that allows you to play on a chessboard and its implementation.
-  The application should allow you to play basic types of games such as chess and checkers.
-  In addition, the solution should allow the definition of other types of games (e.g. based on changed rules of play, unusual size of the board or more than two players).
 bibliography:
 - ../bibliography.bib
 lang: pl
 keywords-pl:
-- Android, Kotlin, Java, Spring, Docker, NoSQL, SQL, Kontenery, 
+- Mindstorms, Python, PID
 keywords-en:
-- Android, Kotlin, Java, Spring, Docker, NoSQL, SQL, Containers
+- Mindstorms, Python, PID
 acronyms:
-- acronym: API
-  expansion: Aplication Programming Interface
-- acronym: CLI
-  expansion: Command Line Interface
-- acronym: CSS
-  expansion: Cascade Style Sheeets
-- acronym: HTTP
-  expansion: Hypertext Transfer Protocol
-- acronym: HTTPS
-  expansion: Hypertext Transfer Protocol Secure
-- acronym: JSON
-  expansion: JavaScript Object Notation
-- acronym: NoSQL
-  expansion: No Structured Query Language
-- acronym: ORM
-  expansion: Object-relational mapping
-- acronym: REST API
-  expansion: REpresentational State Transfer Aplication Programming Interface
-- acronym: TDD
-  expansion: Test Driven Development
-- acronym: YAML
-  expansion: Yet Another Markup Language
+- acronym: PID
+  expansion: Proportional-Integral-Derivative Controller
 # Typ pracy (master lub engineer):
 thesistype: engineer
 # Wyłączenie akapitów:

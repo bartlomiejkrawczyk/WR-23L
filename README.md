@@ -46,7 +46,7 @@ Kod bazowy umożliwia nam:
 - głosowe potwierdzenie stanu (START, READY, STOP)
 - wymagana jest jedynie implementacja jednej funkcji `iterate()`
 
-```py
+```{.python caption="FastAPI" #lst:singleton}
 def speak(message: str) -> None:
     sound.speak(message)
     print(message)
@@ -148,7 +148,7 @@ Na samym początku założyliśmy naiwny sposób śledzenia lini - kod dostępny
 Opisać, że "naiwny" nazywamy sterowanie jedynie na podstawie koloru - widzimy biały jedziemy - widzimy czarny cofamy dla odpowiedniej strony robota.
 Można zwrócić uwagę, że kolor badamy tylko raz na iterację
 
-```py
+```{.python caption="FastAPI" #lst:singleton}
 FORWARD_SPEED = 30
 TURN_SPEED = 40
 
@@ -200,7 +200,7 @@ Przygotowaliśmy także kilka wersji kodu, które działają na bazie PID, opart
 Ostatecznie po dopracowaniu kodu wpadliśmy na pomysł, żeby manipulować prędkość na prostych w zależności od wyliczonej prędkości skrętu. Na odcinkach prostych, gdy prędkość skrętu była bliska 0 jechaliśmy z prędkością maksymalną - `100`, gdy prędkość skrętu wzrastała odpowiednio zmniejszaliśmy prędkość do przodu, tak do osiągnięcia minimalnej prędkości do przodu.
 - [Najszybszy](./tournament/pid_tournament.py)
 
-```py
+```{.python caption="FastAPI" #lst:singleton}
 MIN_FORWARD_SPEED = 30
 MAX_FORWARD_SPEED = 100
 
@@ -298,7 +298,7 @@ Parostatek | -       | 28.01   | -       | -       | 29.77
 Zmniejszona prędkość względem zawodów, żeby wyrobić się na ostrych zakrętach:
 [Podstawowe PID](./line_follower/pid_basic.py)
 
-```py
+```{.python caption="FastAPI" #lst:singleton}
 MIN_FORWARD_SPEED = 10
 MAX_FORWARD_SPEED = 20
 
@@ -341,7 +341,7 @@ W tym etapie przebudowaliśmy trochę nasz robot w taki sposób, aby mógł prze
 ## Kod
 
 Zdefniowaliśmy stany:
-```py
+```{.python caption="FastAPI" #lst:singleton}
 ################
 #              #
 #    STATES    #
@@ -357,7 +357,7 @@ STATE_STOP = 5
 ```
 
 Zaktualizowaliśmy główną pętlę:
-```py
+```{.python caption="FastAPI" #lst:singleton}
 def work() -> None:
     integral = 0.0
     last_error = 0
@@ -377,7 +377,7 @@ def work() -> None:
 ```
 
 W pętli na podstawie stanu wołaliśmy odpowiednią funkcję obsługi:
-```py
+```{.python caption="FastAPI" #lst:singleton}
 ITERATION_FUNCTION = {
     FOLLOW_LINE_UNTIL_PICK_UP: follow_line_until_pick_up,
     FOLLOW_LINE_UNTIL_DETECTED_OBJECT: follow_line_until_detected_object,
@@ -400,7 +400,7 @@ Dla każdego stanu zdefniowaliśmy obsługę:
 - Obrót o 90 stopni jest wyliczony i zawsze wykonywane jest tyle samo obrotów kół - zakładamy brak poślizgu
 - Następnie aktualizowany jest stan - średzenie lini dopóki nie napotkamy obiektu
 
-```py
+```{.python caption="FastAPI" #lst:singleton}
 def follow_line_until_pick_up(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     colors = detect_colors()
     if colors[LEFT] == COLORS[PICK_UP]:
@@ -417,7 +417,7 @@ def follow_line_until_pick_up(state: int, integral: float, last_error: int) -> T
 
 - Śledzenie lini z wykorzystaniem PID dopóki czujnik odległości nie wykryje przedmiotu w odległości 1 od przodu robota
 - Gdy odległość jest wystarczająco bliska to podnosimy przedmiot, obracamy się o 180 stopni (wyliczona ilość obrotów kół) i przechodzimy do następnego stanu
-```py
+```{.python caption="FastAPI" #lst:singleton}
 def follow_line_until_detected_object(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     detected_distance = distance()
     if detected_distance < 2:
@@ -431,7 +431,7 @@ def follow_line_until_detected_object(state: int, integral: float, last_error: i
 
 - Po podniesieniu przedmiotu śledziliśmy linię dopóki nie napotkamy na obu czujnikach koloru - koloru czarnego - oznaczało, to że dojechaliśmy do skrzyżowania
 - na skrzyżowaniu skręcaliśmy w prawo, a następnie przechodziliśmy do kolejnego stanu
-```py
+```{.python caption="FastAPI" #lst:singleton}
 def follow_line_until_two_lines_detected(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     colors = detect_colors()
     if colors[LEFT] == ColorSensor.COLOR_BLACK and colors[RIGHT] == ColorSensor.COLOR_BLACK:
@@ -445,7 +445,7 @@ def follow_line_until_two_lines_detected(state: int, integral: float, last_error
 
 - Podobnie jak w stanie pierwszym śledziliśmy linię dopóki na jednym z czujników nie wykryjemy koloru na który należy odłożyć przedmiot
 - Gdy wykryjemy kolor to skręcamy w odpowiednią stronę i przechodzimy do następnego stanu
-```py
+```{.python caption="FastAPI" #lst:singleton}
 def follow_line_until_drop_down(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     colors = detect_colors()
     if colors[LEFT] == COLORS[DROP_DOWN]:
@@ -462,7 +462,7 @@ def follow_line_until_drop_down(state: int, integral: float, last_error: int) ->
 
 - Na sam koniec pozostało śledzenie lini dopóki nie wykryjemy na obu czujnikach koloru - koloru docelowego
 - Gdy wykryjemy ten kolor to odkładamy przedmiot, puszczamy muzykę i obracamy się w miejscu, po czym zatrzumujemy robota
-```py
+```{.python caption="FastAPI" #lst:singleton}
 def follow_line_until_two_drop_down_colors_detected(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     colors = detect_colors()
     if colors[LEFT] == COLORS[DROP_DOWN] and colors[RIGHT] == COLORS[DROP_DOWN]:
@@ -499,7 +499,7 @@ WINNING_SONG = (
 ```
 
 - W ostatnim stanie resetujemy ustawienie robota i oczekujemy na przycisk, aby robot mógł wystartować ponownie
-```py
+```{.python caption="FastAPI" #lst:singleton}
 def stop_robot(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     handle_button_pressed()
     state = FOLLOW_LINE_UNTIL_PICK_UP
@@ -513,7 +513,7 @@ Funkcje pomocnicze:
 Wykrywanie kolorów
 - mieliśmy problem z kolorem wykrywanym przez migające na zmianę czujniki
 - aby ujednolicić pomiary najpierw zmienialiśmy tryb wykrywania czujników, a następnie dopiero wykrywaliśmy kolor
-```py
+```{.python caption="FastAPI" #lst:singleton}
 def detect_colors() -> Tuple[int, int]:
     ensure_mode(ColorSensor.MODE_COL_COLOR)
     return (
@@ -530,7 +530,7 @@ def ensure_mode(color: str) -> None:
 Stała ilość rotacji w miejscu:
 - ponieważ czujniki są minimalnie przesunięte do przodu względem osi kół, to przed obrotem jedziemy minimalnie do przodu, aby po obrocie robot skończył z czujnikami wokół lini
 - podobnie po skończonym obrocie jasność kolorów na które wjeżdżamy nie zawsze pozwalała nam na dobre rozróżnianie tych kolorów od koloru białego za pomocą czujników odbijających światło czerwone - więc rozwiązaliśmy to przejechaniem przez ten kolor po prostej i dopiero gdy dojechaliśmy do koloru czarnego załączało się dalsze śledzenie lini
-```py
+```{.python caption="FastAPI" #lst:singleton}
 ROTATIONS_PER_FULL_ROTATION = 3.15
 
 def turn(full_roations: float, speed: int) -> None:
