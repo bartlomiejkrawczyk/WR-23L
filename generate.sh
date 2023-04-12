@@ -24,6 +24,9 @@ install () {
 }
 
 fetch_submodule () {
+    if [ ! -d "wut-thesis-pandoc" ]; then
+        git submodule add https://github.com/mRokita/wut-thesis-pandoc.git wut-thesis-pandoc
+    fi
     git submodule update --init --recursive
 }
 
