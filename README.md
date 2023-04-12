@@ -241,13 +241,13 @@ def iterate(integral: float, last_error: int) -> Tuple[float, int]:
 
 ## Dobieranie parametrów
 
-Parametry PID, które zastosowaliśmy w naszym robocie, zostały dobrane metodą inżynieryjną, czyli przez serię prób i błędów. Zastosowaliśmy podejście iteracyjne, w którym kolejne wartości parametrów były ustalane na podstawie wyników testów oraz obserwacji zachowania robota.
+Parametry PID, które zastosowaliśmy w naszym robocie, zostały dobrane metodą inżynierską. Zastosowaliśmy podejście iteracyjne, w którym kolejne wartości parametrów były ustalane na podstawie wyników testów oraz obserwacji zachowania robota.
 
 W zależności od rodzaju zadania, dla którego był przeznaczony robot, dobieraliśmy parametry PID w inny sposób. Na przykład, podczas zawodów głównie skupialiśmy się na zwiększaniu prędkości przy okazji odpowiednio modyfikując parametr D, ponieważ tor nie posiadał ostrych zakrętów. Zwiększaliśmy również parametr I, aby nasz robot na odcinkach prostych mógł osiągnąć jak największą prędkość. W przypadku parametrów D i I staraliśmy się dobrać odpowiednią wartość na podstawie doświadczenia.
 
 W zadaniu Line Follower skupiliśmy się na dostosowaniu wartości parametrów P i D, ponieważ było tam dużo ostrych zakrętów. Zaczęliśmy od wartości, które sprawdziły się podczas zawodów, a następnie stosowaliśmy iteracyjną metodę doboru wartości parametrów, aż do osiągnięcia idealnych wartości, które okazały się takie same jak wartości początkowe. W tym przypadku jedyną zmianą, jaką wprowadziliśmy, było zmniejszenie prędkości ruchu robota.
 
-W ostatnim zadaniu pozostawiliśmy parametry prawie takie same jak w poprzednim zadaniu, jednakże zmniejszyliśmy prędkość ruchu robota. W przypadku tego zadania dodatkowo musieliśmy wyznaczyć czas w jakim nasz robot robi pełen obrót o 360 stopni, tak aby w prosty sposób dokonywać obrotów w prawo/lewo, a także zawracania.
+W ostatnim zadaniu pozostawiliśmy parametry prawie takie same jak w poprzednim zadaniu, jednakże zmniejszyliśmy prędkość ruchu robota. W przypadku tego zadania dodatkowo musieliśmy wyznaczyć ilość obrotów kół jakie musi wykonać nasz robot aby wykonać pełen obrót o 360 stopni, tak aby w prosty sposób dokonywać obrotów w prawo/lewo, a także zawracania.
 
 
 ## Schemat blokowy PID
@@ -315,14 +315,13 @@ AMPLIFIER = 0.25
 
 W tym etapie przebudowaliśmy trochę nasz robot w taki sposób, aby mógł przewozić on wykrywać i przewozić zbudowany przez nas przedmiot.
 
-![](./img/robot_tr1.jpg){width=50%}
+![](./img/robot_tr1.jpg){width=50%} \ ![](./img/robot_tr2.jpg){width=50%}
 
-![](./img/robot_tr2.jpg){width=50%}
+![](./img/robot_tr3.jpg){width=50%} \ ![](./img/robot_tr4.jpg){width=50%}
 
-![](./img/robot_tr3.jpg){width=50%}
-
-![](./img/robot_tr4.jpg){width=50%}
-
+\begin{figure}[!h]
+\caption{Trzecia iteracja robota - wspierająca detekcję i przenoszenie przedmiotów}
+\end{figure}
 
 ## Działający robot
 
@@ -561,3 +560,6 @@ def turn_left() -> None:
 def turn_right() -> None:
     turn(0.25, MAX_FORWARD_SPEED)
 ```
+## Tor
+
+![Trasa dla transportera](./img/transporter_road.jpg){width=50%}
