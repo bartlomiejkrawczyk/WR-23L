@@ -1,8 +1,9 @@
 # Informacje dotyczące pracy:
-title-pl: "TODO"
-title-en: "TODO"
-author: "Bartłomiej Krawczyk, Mateusz Brzozowski"
-album: "310774, 310678"
+title-pl: "Wstęp do Robotyki - Laboratoria"
+authorfirst: "Bartłomiej Krawczyk"
+albumfirst: "310774"
+authorsecond: "Mateusz Brzozowski"
+albumsecond: "310608"
 institute: "Automatyki i Informatyki Stosowanej"
 faculty: "eiti"
 speciality: "Inżynieria Oprogramowania"
@@ -15,15 +16,11 @@ abstract-pl: |
 bibliography:
 - ../bibliography.bib
 lang: pl
-keywords-pl:
-- Mindstorms, Python, PID
-keywords-en:
-- Mindstorms, Python, PID
 acronyms:
 - acronym: PID
   expansion: Proportional-Integral-Derivative Controller
 # Typ pracy (master lub engineer):
-thesistype: engineer
+# thesistype: engineer
 # Wyłączenie akapitów:
 parindent: false
 # Kolor cytowań:

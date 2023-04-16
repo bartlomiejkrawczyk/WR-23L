@@ -260,7 +260,6 @@ W zadaniu Line Follower skupiliśmy się na dostosowaniu wartości parametrów P
 
 W ostatnim zadaniu pozostawiliśmy parametry prawie takie same jak w poprzednim zadaniu, jednakże zmniejszyliśmy prędkość ruchu robota. W przypadku tego zadania dodatkowo musieliśmy wyznaczyć ilość obrotów kół jakie musi wykonać nasz robot aby wykonać pełen obrót o 360 stopni, tak aby w prosty sposób dokonywać obrotów w prawo/lewo, a także zawracania.
 
-
 ## Schemat blokowy PID
 
 ```mermaid
@@ -283,6 +282,8 @@ flowchart
     style="display: block;margin-left: auto;margin-right: auto;"/>
 
 ## Wyniki
+
+: Wyniki zawodów \label{tab:statsone}
 
 Team       | Round 1 | Round 2 | Round 3 | Round 4 | Round 5
 -----------|---------|---------|---------|---------|--------
@@ -342,12 +343,6 @@ W tym etapie przebudowaliśmy trochę nasz robot w taki sposób, aby mógł prze
 
 Zdefniowaliśmy stany:
 ```{.python caption="FastAPI" #lst:singleton}
-################
-#              #
-#    STATES    #
-#              #
-################
-
 FOLLOW_LINE_UNTIL_PICK_UP = 0
 FOLLOW_LINE_UNTIL_DETECTED_OBJECT = 1
 FOLLOW_LINE_UNTIL_TWO_LINES_DETECTED = 2

@@ -64,21 +64,22 @@ done
 
 mkdir -p output/
 
-cd wut-thesis-pandoc
+cp -r modified/ include/
+cp -rn ./wut-thesis-pandoc/include/ ./
 
-pandoc ../$INPUT \
+pandoc $INPUT \
     --verbose \
     --standalone \
     --syntax-definition include/python.xml \
-    --biblatex -o ../output/$OUTPUT \
+    --biblatex -o output/$OUTPUT \
     --listings \
     --highlight=tango \
-    --metadata-file=../$CONFIG \
+    --metadata-file=$CONFIG \
     --pdf-engine=latexmk \
     --from markdown \
     -F mermaid-filter \
     --template include/wut-template.tex
 
-rm mermaid-filter.err
+rm -rf ./include/
 
-cd ..
+rm mermaid-filter.err
