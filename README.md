@@ -13,6 +13,59 @@ Nazwa robota:
 
 \newpage
 
+# Zadania
+
+Na pierwszych zajęciach prowadzący przekazał nam instrukcję z zadaniami jakie mieliśmy wykonać w trakcie trwania laboratoriów, następnie szczegółowo wytłumaczył nam na czym polegają poszczególne zadania.
+
+## Zadanie 1 - Podążanie wzdłuż linii (Linefollower)
+
+Zadaniem robota jest przejechanie całej trasy po wyznaczonej linii.
+![Przykładowa trasa I](./img/trasa1.jpg){width=50%}\ ![Przykładowa trasa II](./img/trasa2.jpg){width=50%}
+
+## Zadanie 2 - Transporter
+
+Zadaniem robota jest przetransportowanie obiektów z punktów bazowych do punktów docelowych.
+Punkt bazowy i punkt docelowy oznaczone są przez kolorowe elementy planszy. Rozwidlenie do opowiedniego koloru jest zaznaczone na czarnej linii trasy.
+![Przykładowa plansza do zadania Transporter](./img/WR-kolor.jpg){width=75%}
+
+# Założenia
+
+Trasa do zadania pierwszego jest czarną linią na białym tle. Linia składa się nie tylko z prostych odcinków, lecz na drodze mogą znajdować się różnego rodzaju trudne zakręty, skrzyżowania do pokonania, takie jak np. ostre zakręty, zaokrąglone zakaty, skrzyżowania, zakrzywione linie.
+
+![Prosta linia](./img/line.jpg){width=25%} \ ![Ostry zakręt](./img/sharp_turn.jpg){width=25%} \ ![Zaokrąglony zakręt](./img/round_turn.jpg){width=25%}
+![Skrzyżowanie](./img/cross.jpg){width=25%} \ ![Zakrzywiona linia](./img/sharp_line.jpg){width=25%}
+
+W ramach drugiego zadania trasa dodatkowo składa się z skrzyżowań odpowiednia oznaczonych wybranym kolorem. Kolory mogą się powtarzać, dlatego należy zapamiętywać stan robota. Trasa może dodatkowo zawierać np. kilka czerwonych skrzyżowań, zielonego skrzyżowania, czerwonej platformy, zielonej platformy z dłuższym dojazdem.
+
+![Czerwone skrzyżowanie](./img/red_turn.jpg){width=25%} \ ![Zielone skrzyżowanie](./img/green_turn.jpg){width=25%}
+![Czerwona platforma](./img/red_platform.jpg){width=25%} \ ![Zielona platforma](./img/green_platform.jpg){width=25%}
+
+# Przygotowanie do pracy
+
+Przed przystąpieniem do rozwiązywania zadań otrzymaliśmy od prowadzącego laboratoria części robota `LEGO Mindstorms Ev3`, a także klocki `LEGO`, które posłużyły nam do zbudowania naszego robota.
+
+![Otrzymane elementy robota LEGO Mindstorms Ev3](./img/elements.jpg){width=75%}
+
+Poszczególne elementy posiadają różne funkcjonalności, które po złożeniu w całość pomogły nam rozwiązać zadania.
+
+Do zadania pierwszego wykorzystaliśmy następujące elementy robota takie jak:
+
+| Element | Zastosowanie | Zdjęcie |
+| - | - | - |
+| główna jednostka sterująca | Uruchamia program, odbiera i nadaje sygnały do poszczególnych czujników i silników | ![](./img/core.jpg){width=25%} |
+| 2 x silnik napędowy do kół | Do silników były przymocowane koła, które umożliwiły poruszanie sie robota | ![](./img/move_engine.jpg){width=25%} |
+| 2 x czujnik światła | Wykrywanie lini i kolorów jakie znajdowały sie pod robotem | ![](./img/color_detector.jpg){width=25%} |
+| przycisk | Uruchamianie i zatrzymywanie robota | ![](./img/button.jpg){width=25%} |
+
+Posłużyły nam one do wykrywania linii i poruszania się wzdłuż niej. Jednakże w przypadku rozwiązywania kolejnego zadania, przedstawione elementy okazały się niewystarczające, ponieważ oprócz śledzenia musieliśmy jeszcze wykrywać obiekt, podnosić go i opuszczać. Dlatego dodatkowo w przypadku rozwiązywania zadania 2 dołożyliśmy następujące elementy:
+
+| Element | Zastosowanie | Zdjęcie |
+| - | - | - |
+| serwomechanizm | Podnoszenie i opuszczanie obiektu | ![](./img/servo.jpg){width=25%} |
+| czujnik odległości | Wykrywanie w jakiej odległości znajduje się obiekt | ![](./img/distance_detector.jpg){width=25%} |
+
+
+
 # Mechanika
 
 Robot z napędem różnicowym - dwa niezależnie napędzane koła stałe na jednej osi.
