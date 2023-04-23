@@ -121,11 +121,13 @@ Posłużyły nam one do wykrywania linii i poruszania się wzdłuż niej. Jednak
 | serwomechanizm     | Podnoszenie i opuszczanie obiektu                  | ![](./img/servo.jpg){width=25%}             |
 | czujnik odległości | Wykrywanie w jakiej odległości znajduje się obiekt | ![](./img/distance_detector.jpg){width=25%} |
 
+# Realizacja
 
+Początek pracy poświęciliśmy na zapoznanie się z wykładami udostępnionymi w ramach wykładów z przedmiotu Wstęp Do Robotyki. Dzięki temu zgłębiliśmy matematyczne podstawy tego w jaki sposób może poruszać się pojazd kołowy.
 
-# Mechanika
+## Mechanika
 
-Robot z napędem różnicowym - dwa niezależnie napędzane koła stałe na jednej osi. 
+Robot z napędem różnicowym - dwa niezależnie napędzane koła stałe na jednej osi.
 
 W celu zmiany położenia modyfikowaliśmy prędkości kół. Założyliśmy jedną prędkość podstawową do przodu oraz dodatkowo modyfikowaliśmy skręt odpowiednio modyfikując składowe prędkości poszczególnych kół.
 
@@ -149,7 +151,186 @@ $$ \omega = \frac{v_l - v_p}{d} $$
 
 $$ R_C = \frac{v}{\omega} = \frac{d(v_l + v_p)}{2 (v_l - v_p)} $$
 
-## Kod
+## Rozwiązanie bazujące na PID
+
+#### Wpływ parametrów PID
+
+- **Parametr P**
+    - parametr brany z największą wagą
+    - oznaczał chwilową różnicę w poziomie odbijanego światła odbieranego przez czujniki
+- **Parametr I**
+    - parametr brany z najmniejszą wagą (ponieważ `integral` był bardzo dużą liczbą w porównaniu do `error` oraz `derivative`)
+    - `integral` przechowywał historię kilku ostatnich iteracji programu, przez co powodował, że jak wyjechaliśmy jedynie w niewielkim stopniu to skręt był niewielki, jednak gdy przez dłuższy czas czujniki wykrywały linię to poziom skrętu zwiększał się
+- **Parametr D**
+    - parametr wynikał z chwilowej zmiany między poziomem lewego i prawego czujnika
+    - parametr miał największy wpływ w przypadku ostrych skrętów
+    - parametr liczył się jedynie przy zmianie między ostatnimi błędami
+
+## Dobieranie parametrów
+
+Parametry PID, które zastosowaliśmy w naszym robocie, zostały dobrane metodą inżynierską. Zastosowaliśmy podejście iteracyjne, w którym kolejne wartości parametrów były ustalane na podstawie wyników testów oraz obserwacji zachowania robota.
+
+W zależności od rodzaju zadania, dla którego był przeznaczony robot, dobieraliśmy parametry PID w inny sposób. Na przykład, podczas zawodów głównie skupialiśmy się na zwiększaniu prędkości przy okazji odpowiednio modyfikując parametr D, ponieważ tor nie posiadał ostrych zakrętów. Zwiększaliśmy również parametr I, aby nasz robot na odcinkach prostych mógł osiągnąć jak największą prędkość. W przypadku parametrów D i I staraliśmy się dobrać odpowiednią wartość na podstawie doświadczenia.
+
+W zadaniu Line Follower skupiliśmy się na dostosowaniu wartości parametrów P i D, ponieważ było tam dużo ostrych zakrętów. Zaczęliśmy od wartości, które sprawdziły się podczas zawodów, a następnie stosowaliśmy iteracyjną metodę doboru wartości parametrów, aż do osiągnięcia idealnych wartości, które okazały się takie same jak wartości początkowe. W tym przypadku jedyną zmianą, jaką wprowadziliśmy, było zmniejszenie prędkości ruchu robota.
+
+W ostatnim zadaniu pozostawiliśmy parametry prawie takie same jak w poprzednim zadaniu, jednakże zmniejszyliśmy prędkość ruchu robota. W przypadku tego zadania dodatkowo musieliśmy wyznaczyć ilość obrotów kół jakie musi wykonać nasz robot aby wykonać pełen obrót o 360 stopni, tak aby w prosty sposób dokonywać obrotów w prawo/lewo, a także zawracania.
+
+## Wyniki
+
+: Wyniki zawodów \label{tab:statsone}
+
+Team       | Round 1 | Round 2 | Round 3 | Round 4 | Round 5
+-----------|---------|---------|---------|---------|--------
+Parostatek | -       | 28.01   | -       | -       | 29.77
+
+### Wnioski
+
+- najcięższe było dobranie parametrów PID, tak aby robot jeździł z zadowalającą prędkością
+
+## Line Follower
+
+### Parametry
+
+Zmniejszona prędkość względem zawodów, żeby wyrobić się na ostrych zakrętach:
+[Podstawowe PID](./line_follower/pid_basic.py)
+
+```{.python caption="Zmodyfikowane parametry - zadanie śledzenia lini" #lst:singleton}
+MIN_FORWARD_SPEED = 10
+MAX_FORWARD_SPEED = 20
+
+FORWARD_SPEED_CORRECTION = (
+    (MAX_FORWARD_SPEED - MIN_FORWARD_SPEED) / MAX_FORWARD_SPEED
+)
+
+CONSTANT_P = 4.0
+CONSTANT_I = 0.01
+CONSTANT_D = 4.0
+
+HISTORY_LOSS = 0.5
+
+AMPLIFIER = 0.25
+```
+
+## Transporter
+
+Aby przetransportować obiekt z jednego miejsca na drugi musieliśmy na początku przeanalizować wszystkie możliwe stany, jakie mogą wystąpić w tracie zadania. Tak więc, przygotowaliśmy schemat stanowy, który przedstawia to jak ma zachowywać się w danym momencie.
+
+```mermaid
+stateDiagram-v2
+    1: Jazda wzdłuż czarnej lini
+    2: Skręt w prawo
+    3: Skręt w lewo
+    4: Jazda wzdłuż czarnej lini
+    5: Podniesienie obiektu, obrót o 180 stopni i jazda wzdłuż czarnej lini
+    6: Skręt w lewo i jazda wzdłuż czarnej lini
+    7: Skręt w prawo
+    8: Skręt w lewo
+    9: Jazda wzdłuż czarnej lini
+    10: Upuszczenie obiektu, wycofanie i zagranie melodii
+    [*] --> 1
+
+    1 --> 2: Znalezienie zielonej lini z prawej strony
+    1 --> 3: Znalezienie zielonej lini z lewej strony
+    2 --> 4
+    3 --> 4
+    4 --> 5: Wykrycie obiektu przed pojazdem
+    5 --> 6: Wykrycie prostopadłej czarnej lini
+    6 --> 7: Znalezienie czerwonej lini z prawej strony
+    6 --> 8: Znalezienie czerwonej lini z lewej strony
+    7 --> 9
+    8 --> 9
+    9 --> 10: Wykrycie czerwonego kwadratu
+    10 --> [*]
+```
+
+## Tor
+
+Do każdego rodzaju zadania z jakim musiał zmierzyć się nasz robot, przygotowywany był odpowiedni tor.
+
+| Rodzaj zadania | Zdjęcie toru |
+|-|-|
+| Zawody | ![Tor na zawody](./img/tournament.jpg){width=50%}
+| Line Follower | ![Tor - podążanie za linią](./img/line_follower.jpg){width=30%}
+| Transporter | ![Trasa dla transportera](./img/transporter_road.jpg){width=50%}
+
+
+\newpage
+
+# Budowa robota
+
+## Zawody
+
+Wykorzystując otrzymane przez prowadzącego laboratoria elementy robota, a także udostępnioną pokaźną ilość kloców lego przystąpiliśmy do budowy robota.
+
+### Robot - iteracja I
+
+Budowę naszego robota rozpoczęliśmy od zamontowania kół, dwóch z przodu robota, oraz jednego samonastawnego z tyłu. Posłużyła nam do tego dolna podstawa, zamontowana do robota, zwiększająca jego stabilność, a także umożliwiająca przemontowanie czujników światła, które chcieliśmy aby znalazły się na wysokości przednich kół.
+
+![](./img/robot_i1.jpg){width=50%}\ ![](./img/robot_i2.jpg){width=50%}
+![](./img/robot_i3.jpg){width=50%}\ ![](./img/robot_i4.jpg){width=50%}
+
+\begin{figure}[!h]
+\caption{Pierwsza iteracja robota - z kołem samonastawnym}
+\end{figure}
+
+\newpage
+
+![](./img/robot_i5.jpg){width=50%}\ ![](./img/robot_i6.jpg){width=50%}
+![](./img/robot_i7.jpg){width=50%}\ ![](./img/robot_i8.jpg){width=50%}
+
+\begin{figure}[!h]
+\caption{Pierwsza iteracja robota - z kołem samonastawnym}
+\end{figure}
+
+\newpage
+
+### Robot - iteracja II
+
+W celu uzyskania lepszych czasów w czasie trwania zawodów zamieniliśmy koło samonastawne na kulę, która spowodowała zmniejszenie tarcia o powierzchnię w rezultacie, zwiększyła szybkość poruszania się robota.
+
+![Fast Line Follower](./img/robot_t1.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t2.jpg){width=50%}
+![Fast Line Follower](./img/robot_t3.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t4.jpg){width=50%}
+
+\begin{figure}[!h]
+\caption{Druga iteracja robota - z kulą zamiast koła wspierającego}
+\end{figure}
+
+\newpage
+
+![Fast Line Follower](./img/robot_t5.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t6.jpg){width=50%}
+![Fast Line Follower](./img/robot_t7.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t8.jpg){width=50%}
+
+\begin{figure}[!h]
+\caption{Druga iteracja robota - z kulą zamiast koła wspierającego}
+\end{figure}
+
+\newpage
+
+## Line Follower
+
+Do zaliczenia pierwszego zadania, polegającego na śledzeniu linii, wykorzystaliśmy II iterację robota zbudowanego w czasie trwania zawodów.
+
+## Transporter
+
+W tym etapie przebudowaliśmy trochę nasz robot w taki sposób, aby mógł wykrywać i przewozić zbudowany przez nas przedmiot. Dlatego też, czujnik odległości, aby poprawnie rozpoznawał obliczał odległość obiektów znajdujących się przed robotem, musiał być zamontowany przed czujnikami światła, dodatkowo musiał znaleźć się na tyle nisko, aby nie utrudniał pracy wysięgnika. Tak więc przemontowaliśmy go do dolnej podstawy robota, pomiędzy czujnikami światła, lekko wysuniętym do przodu. Podnośnik zamontowaliśmy u góry, na wyciągniętych ramionach, tak aby znajdował sie nad czujnikiem odległości, a jako ramiona do podnoszenia wybraliśmy prostopadle zamontowane zakrzywione klocki, tak aby w łatwy sposób unieść obiekt znajdujący sie przed robotem.
+
+![](./img/robot_tr1.jpg){width=50%} \ ![](./img/robot_tr2.jpg){width=50%}
+
+![](./img/robot_tr3.jpg){width=50%} \ ![](./img/robot_tr4.jpg){width=50%}
+
+\begin{figure}[!h]
+\caption{Trzecia iteracja robota - wspierająca detekcję i przenoszenie przedmiotów}
+\end{figure}
+
+## Działający robot
+
+[LINK DO NAGRANIA NA YOUTUBE](https://youtu.be/3knkUJOpiRk)
+
+
+# Implementacja
+
+## Kod bazowy
 <!-- base.py z opisami -->
 
 Najpierw napisaliśmy podstawę do rozwijania kolejnych iteracji naszego kodu. Pozwoliło to nam przy kolejnych iteracjach jedynie kopiować podstawę i dowolnie ją modyfikować według potrzeb. Kod podstawy umieściliśmy w pliku [Baza](./base.py)
@@ -212,48 +393,9 @@ if __name__ == '__main__':
     main()
 ```
 
-# Zawody
-## Robot - iteracja I
+## Kod Line Follower'a
 
-
-![](./img/robot_i1.jpg){width=50%}\ ![](./img/robot_i2.jpg){width=50%}
-![](./img/robot_i3.jpg){width=50%}\ ![](./img/robot_i4.jpg){width=50%}
-
-\begin{figure}[!h]
-\caption{Pierwsza iteracja robota - z kołem samonastawnym}
-\end{figure}
-
-\newpage
-
-![](./img/robot_i5.jpg){width=50%}\ ![](./img/robot_i6.jpg){width=50%}
-![](./img/robot_i7.jpg){width=50%}\ ![](./img/robot_i8.jpg){width=50%}
-
-\begin{figure}[!h]
-\caption{Pierwsza iteracja robota - z kołem samonastawnym}
-\end{figure}
-
-\newpage
-
-## Robot - iteracja II
-![Fast Line Follower](./img/robot_t1.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t2.jpg){width=50%}
-![Fast Line Follower](./img/robot_t3.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t4.jpg){width=50%}
-
-\begin{figure}[!h]
-\caption{Druga iteracja robota - z kulą zamiast koła wspierającego}
-\end{figure}
-
-\newpage
-
-![Fast Line Follower](./img/robot_t5.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t6.jpg){width=50%}
-![Fast Line Follower](./img/robot_t7.jpg){width=50%}\ ![Fast Line Follower](./img/robot_t8.jpg){width=50%}
-
-\begin{figure}[!h]
-\caption{Druga iteracja robota - z kulą zamiast koła wspierającego}
-\end{figure}
-
-\newpage
-
-## Kod
+W ramach tego zadania rozbudowaliśmy bazowy kod, o funkcjonalność robota, tak aby ten mógł rozpoznawać linię i podążać za nią. Na zajęcia przygotowaliśmy dwie wersje kodu. `Kod "Nawiny"`, bezpośrednio reagujący na to co odbierają czujniki oraz `Kod bazujący na PID`, który ostatecznie został wykorzystany do zaliczenia zadania.
 
 ### Kod "Naiwny"
 
@@ -353,94 +495,9 @@ def iterate(integral: float, last_error: int) -> Tuple[float, int]:
     return integral, last_error
 ```
 
-#### Wpływ parametrów PID
+## Kod Transporter'a
 
-- **Parametr P**
-    - parametr brany z największą wagą
-    - oznaczał chwilową różnicę w poziomie odbijanego światła odbieranego przez czujniki
-- **Parametr I**
-    - parametr brany z najmniejszą wagą (ponieważ `integral` był bardzo dużą liczbą w porównaniu do `error` oraz `derivative`)
-    - `integral` przechowywał historię kilku ostatnich iteracji programu, przez co powodował, że jak wyjechaliśmy jedynie w niewielkim stopniu to skręt był niewielki, jednak gdy przez dłuższy czas czujniki wykrywały linię to poziom skrętu zwiększał się
-- **Parametr D**
-    - parametr wynikał z chwilowej zmiany między poziomem lewego i prawego czujnika
-    - parametr miał największy wpływ w przypadku ostrych skrętów
-    - parametr liczył się jedynie przy zmianie między ostatnimi błędami
-
-## Dobieranie parametrów
-
-Parametry PID, które zastosowaliśmy w naszym robocie, zostały dobrane metodą inżynierską. Zastosowaliśmy podejście iteracyjne, w którym kolejne wartości parametrów były ustalane na podstawie wyników testów oraz obserwacji zachowania robota.
-
-W zależności od rodzaju zadania, dla którego był przeznaczony robot, dobieraliśmy parametry PID w inny sposób. Na przykład, podczas zawodów głównie skupialiśmy się na zwiększaniu prędkości przy okazji odpowiednio modyfikując parametr D, ponieważ tor nie posiadał ostrych zakrętów. Zwiększaliśmy również parametr I, aby nasz robot na odcinkach prostych mógł osiągnąć jak największą prędkość. W przypadku parametrów D i I staraliśmy się dobrać odpowiednią wartość na podstawie doświadczenia.
-
-W zadaniu Line Follower skupiliśmy się na dostosowaniu wartości parametrów P i D, ponieważ było tam dużo ostrych zakrętów. Zaczęliśmy od wartości, które sprawdziły się podczas zawodów, a następnie stosowaliśmy iteracyjną metodę doboru wartości parametrów, aż do osiągnięcia idealnych wartości, które okazały się takie same jak wartości początkowe. W tym przypadku jedyną zmianą, jaką wprowadziliśmy, było zmniejszenie prędkości ruchu robota.
-
-W ostatnim zadaniu pozostawiliśmy parametry prawie takie same jak w poprzednim zadaniu, jednakże zmniejszyliśmy prędkość ruchu robota. W przypadku tego zadania dodatkowo musieliśmy wyznaczyć ilość obrotów kół jakie musi wykonać nasz robot aby wykonać pełen obrót o 360 stopni, tak aby w prosty sposób dokonywać obrotów w prawo/lewo, a także zawracania.
-
-## Tor
-
-![Tor na zawody](./img/tournament.jpg){width=50%}
-
-## Wyniki
-
-: Wyniki zawodów \label{tab:statsone}
-
-Team       | Round 1 | Round 2 | Round 3 | Round 4 | Round 5
------------|---------|---------|---------|---------|--------
-Parostatek | -       | 28.01   | -       | -       | 29.77
-
-### Wnioski
-
-- najcięższe było dobranie parametrów PID, tak aby robot jeździł z zadowalającą prędkością
-
-# Line Follower
-
-## Kod
-
-Zmniejszona prędkość względem zawodów, żeby wyrobić się na ostrych zakrętach:
-[Podstawowe PID](./line_follower/pid_basic.py)
-
-```{.python caption="Zmodyfikowane parametry - zadanie śledzenia lini" #lst:singleton}
-MIN_FORWARD_SPEED = 10
-MAX_FORWARD_SPEED = 20
-
-FORWARD_SPEED_CORRECTION = (
-    (MAX_FORWARD_SPEED - MIN_FORWARD_SPEED) / MAX_FORWARD_SPEED
-)
-
-CONSTANT_P = 4.0
-CONSTANT_I = 0.01
-CONSTANT_D = 4.0
-
-HISTORY_LOSS = 0.5
-
-AMPLIFIER = 0.25
-```
-
-## Tor
-
-
-![Tor - podążanie za linią](./img/line_follower.jpg){width=30%}
-
-
-\newpage
-
-# Transporter
-
-W tym etapie przebudowaliśmy trochę nasz robot w taki sposób, aby mógł wykrywać i przewozić zbudowany przez nas przedmiot.
-
-![](./img/robot_tr1.jpg){width=50%} \ ![](./img/robot_tr2.jpg){width=50%}
-
-![](./img/robot_tr3.jpg){width=50%} \ ![](./img/robot_tr4.jpg){width=50%}
-
-\begin{figure}[!h]
-\caption{Trzecia iteracja robota - wspierająca detekcję i przenoszenie przedmiotów}
-\end{figure}
-
-## Działający robot
-
-[LINK DO NAGRANIA NA YOUTUBE](https://youtu.be/3knkUJOpiRk)
-
-## Kod
+W ramach ostatniego zadania rozbudowaliśmy funkcjonalność kodu z poprzedniego zadania `Kod bazujący na PID`.
 
 Zdefniowaliśmy stany:
 ```{.python caption="Stany osiągane przez transporter" #lst:singleton}
@@ -667,6 +724,3 @@ def turn_left() -> None:
 def turn_right() -> None:
     turn(0.25, MAX_FORWARD_SPEED)
 ```
-## Tor
-
-![Trasa dla transportera](./img/transporter_road.jpg){width=50%}
