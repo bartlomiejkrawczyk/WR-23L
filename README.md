@@ -1,18 +1,3 @@
-\newpage
-# Wstęp do Robotyki
-
-Studenci:
-```
-Bartłomiej Krawczyk - 310774
-Mateusz Brzozowski - 310608
-```
-
-Nazwa robota:
-
-- `Parostatek`
-
-\newpage
-
 # Zadania
 
 Na pierwszych zajęciach prowadzący przekazał nam instrukcję z zadaniami jakie mieliśmy wykonać w trakcie trwania laboratoriów, następnie szczegółowo wytłumaczył nam na czym polegają poszczególne zadania.
@@ -20,25 +5,93 @@ Na pierwszych zajęciach prowadzący przekazał nam instrukcję z zadaniami jaki
 ## Zadanie 1 - Podążanie wzdłuż linii (Linefollower)
 
 Zadaniem robota jest przejechanie całej trasy po wyznaczonej linii.
+
 ![Przykładowa trasa I](./img/trasa1.jpg){width=50%}\ ![Przykładowa trasa II](./img/trasa2.jpg){width=50%}
+
+\begin{figure}[!h]
+\caption{Przykładowa trasa do podążania za wyznaczoną linią}
+\end{figure}
 
 ## Zadanie 2 - Transporter
 
 Zadaniem robota jest przetransportowanie obiektów z punktów bazowych do punktów docelowych.
 Punkt bazowy i punkt docelowy oznaczone są przez kolorowe elementy planszy. Rozwidlenie do opowiedniego koloru jest zaznaczone na czarnej linii trasy.
+
 ![Przykładowa plansza do zadania Transporter](./img/WR-kolor.jpg){width=75%}
 
 # Założenia
 
 Trasa do zadania pierwszego jest czarną linią na białym tle. Linia składa się nie tylko z prostych odcinków, lecz na drodze mogą znajdować się różnego rodzaju trudne zakręty, skrzyżowania do pokonania, takie jak np. ostre zakręty, zaokrąglone zakaty, skrzyżowania, zakrzywione linie.
 
-![Prosta linia](./img/line.jpg){width=25%} \ ![Ostry zakręt](./img/sharp_turn.jpg){width=25%} \ ![Zaokrąglony zakręt](./img/round_turn.jpg){width=25%}
-![Skrzyżowanie](./img/cross.jpg){width=25%} \ ![Zakrzywiona linia](./img/sharp_line.jpg){width=25%}
+
+\begin{figure}
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.4\linewidth]{./img/line.jpg}
+  \captionof{figure}{Prosta linia}
+  \label{fig:test1}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.4\linewidth]{./img/sharp_turn.jpg}
+  \captionof{figure}{Ostry zakręt}
+  \label{fig:test2}
+\end{minipage}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.4\linewidth]{./img/round_turn.jpg}
+  \captionof{figure}{Zaokrąglony zakręt}
+  \label{fig:test1}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.4\linewidth]{./img/cross.jpg}
+  \captionof{figure}{Skrzyżowanie}
+  \label{fig:test2}
+\end{minipage}
+\end{figure}
+
+
+![Zakrzywiona linia](./img/sharp_line.jpg){width=10%}
 
 W ramach drugiego zadania trasa dodatkowo składa się z skrzyżowań odpowiednia oznaczonych wybranym kolorem. Kolory mogą się powtarzać, dlatego należy zapamiętywać stan robota. Trasa może dodatkowo zawierać np. kilka czerwonych skrzyżowań, zielonego skrzyżowania, czerwonej platformy, zielonej platformy z dłuższym dojazdem.
 
-![Czerwone skrzyżowanie](./img/red_turn.jpg){width=25%} \ ![Zielone skrzyżowanie](./img/green_turn.jpg){width=25%}
-![Czerwona platforma](./img/red_platform.jpg){width=25%} \ ![Zielona platforma](./img/green_platform.jpg){width=25%}
+\begin{figure}
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.4\linewidth]{./img/red_turn.jpg}
+  \captionof{figure}{Czerwone skrzyżowanie}
+  \label{fig:test1}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.4\linewidth]{./img/green_turn.jpg}
+  \captionof{figure}{Zielone skrzyżowanie}
+  \label{fig:test2}
+\end{minipage}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.4\linewidth]{./img/red_platform.jpg}
+  \captionof{figure}{Czerwona platforma}
+  \label{fig:test1}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.4\linewidth]{./img/green_platform.jpg}
+  \captionof{figure}{Zielona platforma}
+  \label{fig:test2}
+\end{minipage}
+\end{figure}
 
 # Przygotowanie do pracy
 
@@ -50,25 +103,33 @@ Poszczególne elementy posiadają różne funkcjonalności, które po złożeniu
 
 Do zadania pierwszego wykorzystaliśmy następujące elementy robota takie jak:
 
-| Element | Zastosowanie | Zdjęcie |
-| - | - | - |
-| główna jednostka sterująca | Uruchamia program, odbiera i nadaje sygnały do poszczególnych czujników i silników | ![](./img/core.jpg){width=25%} |
-| 2 x silnik napędowy do kół | Do silników były przymocowane koła, które umożliwiły poruszanie sie robota | ![](./img/move_engine.jpg){width=25%} |
-| 2 x czujnik światła | Wykrywanie lini i kolorów jakie znajdowały sie pod robotem | ![](./img/color_detector.jpg){width=25%} |
-| przycisk | Uruchamianie i zatrzymywanie robota | ![](./img/button.jpg){width=25%} |
+: Otrzymane elementy robota - zadanie 1 \label{tab:elementsone}
+
+| Element                    | Zastosowanie                                                                       | Zdjęcie                                  |
+|----------------------------|------------------------------------------------------------------------------------|------------------------------------------|
+| główna jednostka sterująca | Uruchamia program, odbiera i nadaje sygnały do poszczególnych czujników i silników | ![](./img/core.jpg){width=25%}           |
+| 2 x silnik napędowy do kół | Do silników były przymocowane koła, które umożliwiły poruszanie sie robota         | ![](./img/move_engine.jpg){width=25%}    |
+| 2 x czujnik światła        | Wykrywanie lini i kolorów jakie znajdowały sie pod robotem                         | ![](./img/color_detector.jpg){width=25%} |
+| przycisk                   | Uruchamianie i zatrzymywanie robota                                                | ![](./img/button.jpg){width=25%}         |
 
 Posłużyły nam one do wykrywania linii i poruszania się wzdłuż niej. Jednakże w przypadku rozwiązywania kolejnego zadania, przedstawione elementy okazały się niewystarczające, ponieważ oprócz śledzenia musieliśmy jeszcze wykrywać obiekt, podnosić go i opuszczać. Dlatego dodatkowo w przypadku rozwiązywania zadania 2 dołożyliśmy następujące elementy:
 
-| Element | Zastosowanie | Zdjęcie |
-| - | - | - |
-| serwomechanizm | Podnoszenie i opuszczanie obiektu | ![](./img/servo.jpg){width=25%} |
+: Otrzymane elementy robota - zadanie 2 \label{tab:elementstwo}
+
+| Element            | Zastosowanie                                       | Zdjęcie                                     |
+|--------------------|----------------------------------------------------|---------------------------------------------|
+| serwomechanizm     | Podnoszenie i opuszczanie obiektu                  | ![](./img/servo.jpg){width=25%}             |
 | czujnik odległości | Wykrywanie w jakiej odległości znajduje się obiekt | ![](./img/distance_detector.jpg){width=25%} |
 
 
 
 # Mechanika
 
-Robot z napędem różnicowym - dwa niezależnie napędzane koła stałe na jednej osi.
+Robot z napędem różnicowym - dwa niezależnie napędzane koła stałe na jednej osi. 
+
+W celu zmiany położenia modyfikowaliśmy prędkości kół. Założyliśmy jedną prędkość podstawową do przodu oraz dodatkowo modyfikowaliśmy skręt odpowiednio modyfikując składowe prędkości poszczególnych kół.
+
+Prędkość naszego robota do przodu wynikała ze średniej prędkości obu kół, a prędkość obrotu zależała od różnicy między prędkościami kół.
 
 ## Schemat
 
@@ -99,7 +160,7 @@ Kod bazowy umożliwia nam:
 - głosowe potwierdzenie stanu (START, READY, STOP)
 - wymagana jest jedynie implementacja jednej funkcji `iterate()`
 
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Bazowy kod programu" #lst:singleton}
 def speak(message: str) -> None:
     sound.speak(message)
     print(message)
@@ -198,10 +259,9 @@ if __name__ == '__main__':
 
 Na samym początku założyliśmy naiwny sposób śledzenia lini - kod dostępny jest w pliku [Naiwny](./trials/naive.py)
 
-Opisać, że "naiwny" nazywamy sterowanie jedynie na podstawie koloru - widzimy biały jedziemy - widzimy czarny cofamy dla odpowiedniej strony robota.
-Można zwrócić uwagę, że kolor badamy tylko raz na iterację
+Określeniem "naiwny" nazywamy sterowanie jedynie na podstawie koloru - widzimy biały jedziemy - widzimy czarny cofamy dla odpowiedniej strony robota.
 
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Śledzenie lini - kod naiwny" #lst:singleton}
 FORWARD_SPEED = 30
 TURN_SPEED = 40
 
@@ -239,6 +299,7 @@ def iterate() -> None:
 ```
 
 Przygotowaliśmy kilka iteracji kodu naiwnego, jednak nie sprawdzały się w takim stopniu, jaki chcieliśmy:
+
 - [Naiwny](./trials/naive_atrocity.py)
 - [Naiwny](./trials/naive_trying_to_be_clever.py)
 - [Naiwny](./trials/naive_pid.py)
@@ -246,14 +307,16 @@ Przygotowaliśmy kilka iteracji kodu naiwnego, jednak nie sprawdzały się w tak
 ### Kod bazujący na PID
 
 Przygotowaliśmy także kilka wersji kodu, które działają na bazie PID, opartej o poziom odbitego światła:
-- [Naiwny](./trials/move_tank.py)
-- [Naiwny](./trials/pid_discrete_forward_speed.py)
-- [Naiwny](./trials/pid_trying_to_be_clever.py)
+
+- [PID](./trials/move_tank.py)
+- [PID](./trials/pid_discrete_forward_speed.py)
+- [PID](./trials/pid_trying_to_be_clever.py)
 
 Ostatecznie po dopracowaniu kodu wpadliśmy na pomysł, żeby manipulować prędkość na prostych w zależności od wyliczonej prędkości skrętu. Na odcinkach prostych, gdy prędkość skrętu była bliska 0 jechaliśmy z prędkością maksymalną - `100`, gdy prędkość skrętu wzrastała odpowiednio zmniejszaliśmy prędkość do przodu, tak do osiągnięcia minimalnej prędkości do przodu.
+
 - [Najszybszy](./tournament/pid_tournament.py)
 
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Śledzenie lini - kod bazujący na PID" #lst:singleton}
 MIN_FORWARD_SPEED = 30
 MAX_FORWARD_SPEED = 100
 
@@ -313,26 +376,9 @@ W zadaniu Line Follower skupiliśmy się na dostosowaniu wartości parametrów P
 
 W ostatnim zadaniu pozostawiliśmy parametry prawie takie same jak w poprzednim zadaniu, jednakże zmniejszyliśmy prędkość ruchu robota. W przypadku tego zadania dodatkowo musieliśmy wyznaczyć ilość obrotów kół jakie musi wykonać nasz robot aby wykonać pełen obrót o 360 stopni, tak aby w prosty sposób dokonywać obrotów w prawo/lewo, a także zawracania.
 
-## Schemat blokowy PID
-
-```mermaid
-flowchart
-    input("Setpoint") --> A{Calculate error}
-    A --> D("integral = HISTORY_LOSS * integral + error \n derivative = error - last_error \n last_error = error")
-    D --> E{Calculate turn_speed}
-    E --> F(turn_speed = CONSTANT_P * error + CONSTANT_I * integral + CONSTANT_D * derivative)
-    F --> G{Calculate forward_speed}
-    G --> H("forward_speed = max(MIN_FORWARD_SPEED, MAX_FORWARD_SPEED - FORWARD_SPEED_CORRECTION * abs(turn_speed))")
-    H --> I{Set motor speed}
-    I --> K("output \n left_motor.on(forward_speed + AMPLIFIER * turn_speed) \n right_motor.on(forward_speed - AMPLIFIER * turn_speed)")
-    I --> A
-```
-
 ## Tor
-<img
-    src="./img/tournament.jpg"
-    width="50%"
-    style="display: block;margin-left: auto;margin-right: auto;"/>
+
+![Tor na zawody](./img/tournament.jpg){width=50%}
 
 ## Wyniki
 
@@ -343,6 +389,7 @@ Team       | Round 1 | Round 2 | Round 3 | Round 4 | Round 5
 Parostatek | -       | 28.01   | -       | -       | 29.77
 
 ### Wnioski
+
 - najcięższe było dobranie parametrów PID, tak aby robot jeździł z zadowalającą prędkością
 
 # Line Follower
@@ -352,7 +399,7 @@ Parostatek | -       | 28.01   | -       | -       | 29.77
 Zmniejszona prędkość względem zawodów, żeby wyrobić się na ostrych zakrętach:
 [Podstawowe PID](./line_follower/pid_basic.py)
 
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Zmodyfikowane parametry - zadanie śledzenia lini" #lst:singleton}
 MIN_FORWARD_SPEED = 10
 MAX_FORWARD_SPEED = 20
 
@@ -371,14 +418,15 @@ AMPLIFIER = 0.25
 
 ## Tor
 
-<img
-    src="./img/line_follower.jpg"
-    width="50%"
-    style="display: block;margin-left: auto;margin-right: auto;"/>
+
+![Tor - podążanie za linią](./img/line_follower.jpg){width=30%}
+
+
+\newpage
 
 # Transporter
 
-W tym etapie przebudowaliśmy trochę nasz robot w taki sposób, aby mógł przewozić on wykrywać i przewozić zbudowany przez nas przedmiot.
+W tym etapie przebudowaliśmy trochę nasz robot w taki sposób, aby mógł wykrywać i przewozić zbudowany przez nas przedmiot.
 
 ![](./img/robot_tr1.jpg){width=50%} \ ![](./img/robot_tr2.jpg){width=50%}
 
@@ -395,7 +443,7 @@ W tym etapie przebudowaliśmy trochę nasz robot w taki sposób, aby mógł prze
 ## Kod
 
 Zdefniowaliśmy stany:
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Stany osiągane przez transporter" #lst:singleton}
 FOLLOW_LINE_UNTIL_PICK_UP = 0
 FOLLOW_LINE_UNTIL_DETECTED_OBJECT = 1
 FOLLOW_LINE_UNTIL_TWO_LINES_DETECTED = 2
@@ -405,7 +453,7 @@ STATE_STOP = 5
 ```
 
 Zaktualizowaliśmy główną pętlę:
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Zmodyfikowana pętla bazowa programu" #lst:singleton}
 def work() -> None:
     integral = 0.0
     last_error = 0
@@ -425,7 +473,7 @@ def work() -> None:
 ```
 
 W pętli na podstawie stanu wołaliśmy odpowiednią funkcję obsługi:
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Decyzję, jakiej funkcji obsługi użyć podejmowaliśmy na podstawie stanu" #lst:singleton}
 ITERATION_FUNCTION = {
     FOLLOW_LINE_UNTIL_PICK_UP: follow_line_until_pick_up,
     FOLLOW_LINE_UNTIL_DETECTED_OBJECT: follow_line_until_detected_object,
@@ -448,7 +496,7 @@ Dla każdego stanu zdefniowaliśmy obsługę:
 - Obrót o 90 stopni jest wyliczony i zawsze wykonywane jest tyle samo obrotów kół - zakładamy brak poślizgu
 - Następnie aktualizowany jest stan - średzenie lini dopóki nie napotkamy obiektu
 
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Obsługa śledzenia linii do momentu napotkania koloru z którego należy podnieść przedmiot" #lst:singleton}
 def follow_line_until_pick_up(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     colors = detect_colors()
     if colors[LEFT] == COLORS[PICK_UP]:
@@ -465,7 +513,7 @@ def follow_line_until_pick_up(state: int, integral: float, last_error: int) -> T
 
 - Śledzenie lini z wykorzystaniem PID dopóki czujnik odległości nie wykryje przedmiotu w odległości 1 od przodu robota
 - Gdy odległość jest wystarczająco bliska to podnosimy przedmiot, obracamy się o 180 stopni (wyliczona ilość obrotów kół) i przechodzimy do następnego stanu
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Obsługa śledzenia lini do momentu wykrycia przedmiotu przed robotem" #lst:singleton}
 def follow_line_until_detected_object(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     detected_distance = distance()
     if detected_distance < 2:
@@ -479,7 +527,7 @@ def follow_line_until_detected_object(state: int, integral: float, last_error: i
 
 - Po podniesieniu przedmiotu śledziliśmy linię dopóki nie napotkamy na obu czujnikach koloru - koloru czarnego - oznaczało, to że dojechaliśmy do skrzyżowania
 - na skrzyżowaniu skręcaliśmy w prawo, a następnie przechodziliśmy do kolejnego stanu
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Obsługa śledzenia lini do momentu wykrycia skrzyżowania" #lst:singleton}
 def follow_line_until_two_lines_detected(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     colors = detect_colors()
     if colors[LEFT] == ColorSensor.COLOR_BLACK and colors[RIGHT] == ColorSensor.COLOR_BLACK:
@@ -493,7 +541,7 @@ def follow_line_until_two_lines_detected(state: int, integral: float, last_error
 
 - Podobnie jak w stanie pierwszym śledziliśmy linię dopóki na jednym z czujników nie wykryjemy koloru na który należy odłożyć przedmiot
 - Gdy wykryjemy kolor to skręcamy w odpowiednią stronę i przechodzimy do następnego stanu
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Obsługa śledzenia lini do momentu napotkania koloru na który należy odłożyć przedmiot" #lst:singleton}
 def follow_line_until_drop_down(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     colors = detect_colors()
     if colors[LEFT] == COLORS[DROP_DOWN]:
@@ -510,7 +558,7 @@ def follow_line_until_drop_down(state: int, integral: float, last_error: int) ->
 
 - Na sam koniec pozostało śledzenie lini dopóki nie wykryjemy na obu czujnikach koloru - koloru docelowego
 - Gdy wykryjemy ten kolor to odkładamy przedmiot, puszczamy muzykę i obracamy się w miejscu, po czym zatrzumujemy robota
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Obsługa śledzenia lini do momentu wykrycia kwadratu na który należy odłożyć przedmiot" #lst:singleton}
 def follow_line_until_two_drop_down_colors_detected(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     colors = detect_colors()
     if colors[LEFT] == COLORS[DROP_DOWN] and colors[RIGHT] == COLORS[DROP_DOWN]:
@@ -547,7 +595,7 @@ WINNING_SONG = (
 ```
 
 - W ostatnim stanie resetujemy ustawienie robota i oczekujemy na przycisk, aby robot mógł wystartować ponownie
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Ostatni stan - zatrzymanie robota i oczekiwanie na wciśnięcie przycisku" #lst:singleton}
 def stop_robot(state: int, integral: float, last_error: int) -> Tuple[int, float, int]:
     handle_button_pressed()
     state = FOLLOW_LINE_UNTIL_PICK_UP
@@ -561,7 +609,7 @@ Funkcje pomocnicze:
 Wykrywanie kolorów
 - mieliśmy problem z kolorem wykrywanym przez migające na zmianę czujniki
 - aby ujednolicić pomiary najpierw zmienialiśmy tryb wykrywania czujników, a następnie dopiero wykrywaliśmy kolor
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Funkcja pomocnicza - wykrywanie koloru" #lst:singleton}
 def detect_colors() -> Tuple[int, int]:
     ensure_mode(ColorSensor.MODE_COL_COLOR)
     return (
@@ -578,7 +626,7 @@ def ensure_mode(color: str) -> None:
 Stała ilość rotacji w miejscu:
 - ponieważ czujniki są minimalnie przesunięte do przodu względem osi kół, to przed obrotem jedziemy minimalnie do przodu, aby po obrocie robot skończył z czujnikami wokół lini
 - podobnie po skończonym obrocie jasność kolorów na które wjeżdżamy nie zawsze pozwalała nam na dobre rozróżnianie tych kolorów od koloru białego za pomocą czujników odbijających światło czerwone - więc rozwiązaliśmy to przejechaniem przez ten kolor po prostej i dopiero gdy dojechaliśmy do koloru czarnego załączało się dalsze śledzenie lini
-```{.python caption="FastAPI" #lst:singleton}
+```{.python caption="Funkcje pomocnicze - obrót" #lst:singleton}
 ROTATIONS_PER_FULL_ROTATION = 3.15
 
 def turn(full_roations: float, speed: int) -> None:
