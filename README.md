@@ -107,10 +107,10 @@ Do zadania pierwszego wykorzystaliśmy następujące elementy robota takie jak:
 
 | Element                    | Zastosowanie                                                                       | Zdjęcie                                  |
 |----------------------------|------------------------------------------------------------------------------------|------------------------------------------|
-| główna jednostka sterująca | Uruchamia program, odbiera i nadaje sygnały do poszczególnych czujników i silników | ![](./img/core.jpg){width=25%}           |
-| 2 x silnik napędowy do kół | Do silników były przymocowane koła, które umożliwiły poruszanie sie robota         | ![](./img/move_engine.jpg){width=25%}    |
-| 2 x czujnik światła        | Wykrywanie lini i kolorów jakie znajdowały sie pod robotem                         | ![](./img/color_detector.jpg){width=25%} |
-| przycisk                   | Uruchamianie i zatrzymywanie robota                                                | ![](./img/button.jpg){width=25%}         |
+| główna jednostka sterująca | Uruchamia program, odbiera i nadaje sygnały do poszczególnych czujników i silników | ![](./img/core.jpg){width=30%}           |
+| 2 x silnik napędowy do kół | Do silników były przymocowane koła, które umożliwiły poruszanie sie robota         | ![](./img/move_engine.jpg){width=30%}    |
+| 2 x czujnik światła        | Wykrywanie lini i kolorów jakie znajdowały sie pod robotem                         | ![](./img/color_detector.jpg){width=30%} |
+| przycisk                   | Uruchamianie i zatrzymywanie robota                                                | ![](./img/button.jpg){width=30%}         |
 
 Posłużyły nam one do wykrywania linii i poruszania się wzdłuż niej. Jednakże w przypadku rozwiązywania kolejnego zadania, przedstawione elementy okazały się niewystarczające, ponieważ oprócz śledzenia musieliśmy jeszcze wykrywać obiekt, podnosić go i opuszczać. Dlatego dodatkowo w przypadku rozwiązywania zadania 2 dołożyliśmy następujące elementy:
 
@@ -135,7 +135,7 @@ Prędkość naszego robota do przodu wynikała ze średniej prędkości obu kó�
 
 ## Schemat
 
-![Schemat](./img/schema.png){width=75%}
+![Schemat](./img/schema.png){width=50%}
 
 ## Podstawa matematyczna
 - $v_p, v_l$ - prędkość liniowa prawego, lewego koła
@@ -153,7 +153,7 @@ $$ R_C = \frac{v}{\omega} = \frac{d(v_l + v_p)}{2 (v_l - v_p)} $$
 
 ## Rozwiązanie bazujące na PID
 
-#### Wpływ parametrów PID
+### Wpływ parametrów PID
 
 - **Parametr P**
     - parametr brany z największą wagą
@@ -248,12 +248,23 @@ stateDiagram-v2
 
 Do każdego rodzaju zadania z jakim musiał zmierzyć się nasz robot, przygotowywany był odpowiedni tor.
 
-| Rodzaj zadania | Zdjęcie toru |
-|-|-|
-| Zawody | ![Tor na zawody](./img/tournament.jpg){width=50%}
-| Line Follower | ![Tor - podążanie za linią](./img/line_follower.jpg){width=30%}
-| Transporter | ![Trasa dla transportera](./img/transporter_road.jpg){width=50%}
+\begin{figure}
+\centering
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.6\linewidth]{./img/tournament.jpg}
+  \captionof{figure}{Tor na zawody}
+  \label{fig:test1}
+\end{minipage}%
+\begin{minipage}{.5\textwidth}
+  \centering
+  \includegraphics[width=.6\linewidth]{./img/line_follower.jpg}
+  \captionof{figure}{Tor - podążanie za linią}
+  \label{fig:test2}
+\end{minipage}
+\end{figure}
 
+![Trasa dla transportera](./img/transporter_road.jpg){width=40%}
 
 \newpage
 
